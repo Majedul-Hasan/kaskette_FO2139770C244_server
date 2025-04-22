@@ -1,0 +1,79 @@
+{
+    "workbench.colorCustomizations": {
+        // --- Editor ---
+        "editor.background": "#0f1117",
+        "editor.foreground": "#dcdcdc",
+        "editorLineNumber.foreground": "#555a77",
+        "editorCursor.foreground": "#82B1FF",
+        "editor.selectionBackground": "#3949AB77",
+        "editor.inactiveSelectionBackground": "#3949AB44",
+
+        // --- Activity Bar ---
+        "activityBar.activeBackground": "#20253a",
+        "activityBar.background": "#1b1f30",
+        "activityBar.foreground": "#dcdcdc",
+        "activityBar.inactiveForeground": "#dcdcdc99",
+        "activityBarBadge.background": "#536dfe",
+        "activityBarBadge.foreground": "#ffffff",
+
+        // --- Side Bar ---
+        "sideBar.background": "#1a1d2a",
+        "sideBar.foreground": "#dcdcdc",
+        "sideBar.border": "#3949ab55",
+        "sideBarSectionHeader.background": "#1b1f30",
+        "sideBarSectionHeader.foreground": "#ffffffaa",
+
+        // --- Terminal ---
+        "terminal.background": "#0f1117",
+        "terminal.foreground": "#dcdcdc",
+        "terminalCursor.background": "#dcdcdc",
+        "terminalCursor.foreground": "#82B1FF",
+        "terminal.ansiBlue": "#82B1FF",
+        "terminal.ansiGreen": "#A5D6A7",
+        "terminal.ansiRed": "#EF9A9A",
+        "terminal.ansiYellow": "#FFEE58",
+        "terminal.ansiCyan": "#80DEEA",
+        "terminal.ansiWhite": "#E0E0E0",
+        "terminal.ansiBlack": "#212121",
+
+        "terminal.tab.activeBackground": "#1a1d2a",
+        "terminal.tab.inactiveBackground": "#1b1f3088",
+        "terminal.tab.activeForeground": "#ffffff",
+        "terminal.tab.inactiveForeground": "#90caf9",
+
+        // --- Tabs (Editor Tabs) ---
+        "tab.activeBackground": "#011d71",
+        "tab.activeForeground": "#ffffff",
+        "tab.inactiveBackground": "#0d132e",
+        "tab.inactiveForeground": "#9790f9",
+        "tab.border": "#4c00ff",
+        "tab.hoverBackground": "#26273f",
+
+        // --- Title Bar ---
+        "titleBar.activeBackground": "#1b1f30",
+        "titleBar.activeForeground": "#dcdcdc",
+        "titleBar.inactiveBackground": "#1b1f3088",
+        "titleBar.inactiveForeground": "#90caf9",
+
+        // --- Status Bar ---
+        "statusBar.background": "#1b1f30",
+        "statusBar.foreground": "#dcdcdc",
+        "statusBarItem.hoverBackground": "#3949ab",
+        "statusBarItem.remoteBackground": "#536dfe",
+        "statusBarItem.remoteForeground": "#ffffff",
+
+        // --- Panel (PROBLEMS, OUTPUT, TERMINAL) ---
+        "panel.background": "#0f1117",
+        "panel.border": "#3949ab66",
+        "panelTitle.activeBorder": "#536dfe",
+        "panelTitle.activeForeground": "#ffffff",
+        "panelTitle.inactiveForeground": "#90caf9",
+        "panelInput.background": "#1b1f30",
+        "panelInput.foreground": "#dcdcdc",
+
+        // --- Miscellaneous ---
+        "commandCenter.border": "#3949ab88",
+        "sash.hoverBorder": "#536dfe"
+    },
+    "peacock.color": "#1b1f30"
+}
