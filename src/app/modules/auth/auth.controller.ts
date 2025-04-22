@@ -3,21 +3,6 @@ import catchAsync from '../../helpers/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AuthServices } from './auth.service';
 
-const findUniqUserName = catchAsync(async (req, res) => {
-  const { userName } = req.body;
-  if (!userName) {
-    return sendResponse(res, {
-      statusCode: httpStatus.BAD_REQUEST,
-      message: 'userName is required',
-    });
-  }
-  const result = await AuthServices.findUniqUserName(userName);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    message: 'username is available',
-    data: result,
-  });
-});
 
 const registrationNewUser = catchAsync(async (req, res) => {
   const result = await AuthServices.registrationNewUser(req.body);
@@ -101,5 +86,5 @@ export const AuthControllers = {
   resetPassword,
   changePassword,
   verifiedEmail,
-  findUniqUserName
+  
 };

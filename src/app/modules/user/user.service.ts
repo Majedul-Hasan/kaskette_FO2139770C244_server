@@ -158,6 +158,7 @@ const updateMyProfileIntoDB = async (
   });
   return result;
 };
+
 const updateMyProfileImageIntoDB = async (
   id: string,
   file: any,
@@ -178,8 +179,8 @@ const updateMyProfileImageIntoDB = async (
   }
 
   // Check if there is an existing image and delete it from the file system
-  if (existingUser.image) {
-    const filename = existingUser.image.split("/uploads/")[1]; // Extract the filename from the URL (this part should match the file path)
+  if (existingUser.profilePic) {
+    const filename = existingUser.profilePic.split("/uploads/")[1]; // Extract the filename from the URL (this part should match the file path)
     const imagePath = path.join(process.cwd(), "uploads", filename);
 
     try {
@@ -198,7 +199,7 @@ const updateMyProfileImageIntoDB = async (
   const updatedData = {
     image: file
       ? `${protocol}://${host}/uploads/${file.filename}`
-      : existingUser.image, // Update the image if provided
+      : existingUser.profilePic, // Update the image if provided
   };
 
   const result = await prisma.user.update({
@@ -211,7 +212,7 @@ const updateMyProfileImageIntoDB = async (
       name: true,
       role: true,
       email: true,
-      image: true,
+      profilePic: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -229,6 +230,23 @@ const updateUserRoleStatusIntoDB = async (id: string, payload: any) => {
   return result;
 };
 
+const findUniqUserName = async (userName: string) => {  
+  console.log("Checking for unique username:", userName);
+  
+  // Check if the username already exists in the database 
+  const existingUser = await prisma.user.findUnique({
+    where: { userName },
+  });
+  // If the username exists, throw an error
+  if (existingUser) {
+    throw new ApiError(httpStatus.CONFLICT, "Username already exists");
+  }
+  // If the username is unique, return a success message
+  return {  
+    message: "Username is available",
+  };
+};
+
 export const UserServices = {
   getAllUsersFromDB,
   getMyProfileFromDB,
@@ -236,4 +254,5 @@ export const UserServices = {
   updateMyProfileIntoDB,
   updateMyProfileImageIntoDB,
   updateUserRoleStatusIntoDB,
+  findUniqUserName
 };

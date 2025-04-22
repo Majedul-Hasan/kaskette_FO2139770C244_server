@@ -42,12 +42,6 @@ router.post(
   AuthControllers.changePassword
 );
 
-router.get(
-  '/find-unique-username',
-  validateRequest(authValidation.findUniqueUsernameValidation),
-  AuthControllers.findUniqUserName
-);
-
 // router.get(
 //   '/me',
 //   auth("USER"),

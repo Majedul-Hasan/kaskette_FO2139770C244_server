@@ -21,7 +21,7 @@ router.get('/:id', auth(), UserControllers.getUserDetails);
 
 router.put(
   '/update-profile',
-  auth('USER', 'PARTNER'),
+  auth('USER'),
   validateRequest(UserValidations.updateProfileSchema),
   parseBodyData,
   UserControllers.updateMyProfile
@@ -29,7 +29,7 @@ router.put(
 
 router.put(
   '/update-profile-image',
-  auth('USER', 'PARTNER'),
+  auth('USER'),
   fileUploader.uploadProfileImage,
   parseBodyData,
   UserControllers.updateMyProfileImage
@@ -37,8 +37,13 @@ router.put(
 
 router.put(
   '/update-user/:id',
-  auth('PARTNER', 'SUPER_ADMIN'),
+  auth('SUPER_ADMIN'),
   UserControllers.updateUserRoleStatus
 );
 
+router.post(
+  '/find-unique-username',
+  validateRequest(UserValidations.findUniqueUsernameValidation),
+  UserControllers.findUniqUserName
+);
 export const UserRouters = router;

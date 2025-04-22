@@ -1,4 +1,4 @@
-import { gender_enum, user_status_enum, UserRoleEnum } from "@prisma/client";
+import { UserGenderEnum, UserStatusEnum, UserRoleEnum } from "@prisma/client";
 import z from "zod";
 const registerUserSchema = z.object({
   body: z.object({
@@ -17,17 +17,17 @@ const registerUserSchema = z.object({
       .optional(),
     image: z.string().optional(),
     password: z.string().min(6, "Password must be at least 6 characters"),
-    gender: z.nativeEnum(gender_enum).refine(
-      (val) => Object.values(gender_enum).includes(val),
+    gender: z.nativeEnum(UserGenderEnum).refine(
+      (val) => Object.values(UserGenderEnum).includes(val),
       (val) => ({
         message: `Invalid gender value: '${val}', expected one of [${Object.values(
-          gender_enum
+          UserGenderEnum
         ).join(", ")}]`,
       })
     ),
     address: z.string().optional(),
     role: z.nativeEnum(UserRoleEnum).default("USER"),
-    status: z.nativeEnum(user_status_enum).default("in_progress"),
+    status: z.nativeEnum(UserStatusEnum).default("in_progress"),
     dateOfBirth: z
       .string()
       .refine((date) => !isNaN(Date.parse(date)), {
@@ -46,12 +46,12 @@ const updateProfileSchema = z.object({
       .regex(/^\d+$/, { message: "Phone number must contain only digits" })
       .optional(),
     gender: z
-      .nativeEnum(gender_enum)
+      .nativeEnum(UserGenderEnum)
       .refine(
-        (val) => Object.values(gender_enum).includes(val),
+        (val) => Object.values(UserGenderEnum).includes(val),
         (val) => ({
           message: `Invalid gender value: '${val}', expected one of [${Object.values(
-            gender_enum
+            UserGenderEnum
           ).join(", ")}]`,
         })
       )
@@ -93,9 +93,16 @@ const verifyOtp = z.object({
   }),
 });
 
+const findUniqueUsernameValidation = z.object({
+  body: z.object({
+    userName: z.string().min(3, "userName must be at least 3 characters"),
+  }),
+});
+
 export const UserValidations = {
   registerUserSchema,
   updateProfileSchema,
   forgotPassword,
   verifyOtp,
+  findUniqueUsernameValidation
 };

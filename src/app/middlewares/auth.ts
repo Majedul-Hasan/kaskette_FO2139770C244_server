@@ -5,7 +5,7 @@ import httpStatus from 'http-status';
 import { jwtHelpers } from '../helpers/jwtHelpers';
 import ApiError from '../errors/ApiError';
 import prisma from '../config/prisma';
-import { user_status_enum, UserRoleEnum } from '@prisma/client';
+import { UserStatusEnum, UserRoleEnum } from '@prisma/client';
 
 const auth = (...roles: UserRoleEnum[]) => {
   return async (
@@ -42,7 +42,7 @@ const auth = (...roles: UserRoleEnum[]) => {
       //   throw new ApiError(httpStatus.BAD_REQUEST, "This user is deleted ! ");
       // }
 
-      if (user.status === user_status_enum.blocked) {
+      if (user.status === UserStatusEnum.blocked) {
         throw new ApiError(httpStatus.FORBIDDEN, 'Your account is blocked!');
       }
 
@@ -94,7 +94,7 @@ export const checkOTP = () => {
     //   throw new ApiError(httpStatus.BAD_REQUEST, "This user is deleted ! ");
     // }
 
-    if (user.status === user_status_enum.blocked) {
+    if (user.status === UserStatusEnum.blocked) {
       throw new ApiError(httpStatus.FORBIDDEN, 'Your account is blocked!');
     }
 
@@ -140,7 +140,7 @@ export const optionalAuth = (...roles: string[]) => {
         throw new ApiError(httpStatus.NOT_FOUND, 'User not found!');
       }
 
-      if (user.status === user_status_enum.blocked) {
+      if (user.status === UserStatusEnum.blocked) {
         throw new ApiError(httpStatus.FORBIDDEN, 'Your account is blocked!');
       }
 

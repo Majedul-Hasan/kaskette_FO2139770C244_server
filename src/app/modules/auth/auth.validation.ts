@@ -129,11 +129,6 @@ const forgotPassword = z.object({
   }),
 });
 
-const findUniqueUsernameValidation = z.object({
-  body: z.object({
-    userName: z.string().min(3, "userName must be at least 3 characters"),
-  }),
-});
 
 export const authValidation = {
   loginUserSchema,
@@ -142,5 +137,4 @@ export const authValidation = {
   changePasswordValidationSchema,
   verifyOtpSchema,
   forgotPassword,
-  findUniqueUsernameValidation
 };

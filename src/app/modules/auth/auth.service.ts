@@ -2,7 +2,6 @@ import * as bcrypt from "bcrypt";
 import httpStatus from "http-status";
 import { Secret } from "jsonwebtoken";
 import config from "../../config";
-import AppError from "../../errors/ApiError";
 // import { generateResetPasswordToken, generateToken } from '../../helpers/generateToken';
 import prisma from "../../config/prisma";
 import crypto from "crypto";
@@ -11,23 +10,7 @@ import { emailText } from "../../utils/emailTemplate";
 import { User, UserStatusEnum, UserRoleEnum } from "@prisma/client";
 import { jwtHelpers } from "../../helpers/jwtHelpers";
 import { generateOTP, saveOrUpdateOTP, sendOTPEmail } from "./auth.utils";
-
-const findUniqUserName = async (userName: string) => {
-  console.log("userName", userName);
-  
-  // Check if the username already exists in the database 
-  const existingUser = await prisma.user.findUnique({
-    where: { userName },
-  });
-  // If the username exists, throw an error
-  if (existingUser) {
-    throw new AppError(httpStatus.CONFLICT, "Username already exists");
-  }
-  // If the username is unique, return a success message
-  return {  
-    message: "Username is available",
-  };
-};
+import ApiError from "../../errors/ApiError";
 
 const registrationNewUser = async (payload: User) => {
   
@@ -38,7 +21,7 @@ const registrationNewUser = async (payload: User) => {
     });
 
     if (existingUser && existingUser.isVerified) {
-      throw new AppError(
+      throw new ApiError(
         httpStatus.CONFLICT,
         "This email is already registered"
       );
@@ -119,11 +102,11 @@ const verifyEmail = async (hexCode: string, otpCode: string) => {
     });
     //
     if (otpRecord?.otp !== otpCode) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Invalid OTP or expired OTP");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid OTP or expired OTP");
     }
 
     if (!otpRecord) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Invalid OTP or expired OTP");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid OTP or expired OTP");
     }
 
     // Delete OTP record
@@ -177,7 +160,7 @@ const loginUserFromDB = async (payload: {
 
   // Check if the user is verified
   if (!userData.isVerified) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "User is not verified");
+    throw new ApiError(httpStatus.UNAUTHORIZED, "User is not verified");
   }
 
   // Check if the password is correct
@@ -187,7 +170,7 @@ const loginUserFromDB = async (payload: {
   );
 
   if (!isCorrectPassword) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Password incorrect");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Password incorrect");
   }
 
   // Update the FCM token if provided
@@ -227,7 +210,7 @@ const forgotPassword = async (payload: { email: string }) => {
     where: { email: payload.email },
   });
   if (!user) {
-    throw new AppError(
+    throw new ApiError(
       httpStatus.NOT_FOUND,
       "User not found! with this email " + payload.email
     );
@@ -274,7 +257,7 @@ const verifyOtpCode = async (payload: { hexCode: string; otpCode: string }) => {
   });
 
   if (!otpRecord) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid OTP");
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid OTP");
   }
 
   // Check if OTP is expired
@@ -286,7 +269,7 @@ const verifyOtpCode = async (payload: { hexCode: string; otpCode: string }) => {
       },
     });
 
-    throw new AppError(
+    throw new ApiError(
       httpStatus.GONE,
       "The OTP has expired. Please request a new one."
     );
@@ -308,7 +291,7 @@ const verifyOtpCode = async (payload: { hexCode: string; otpCode: string }) => {
   ]);
 
   if (!user) {
-    throw new AppError(
+    throw new ApiError(
       httpStatus.NOT_FOUND,
       "User not found! user is possibly deleted by mistake please register"
     );
@@ -338,7 +321,7 @@ const resetPassword = async (
   });
 
   if (!userToUpdate) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found in the database.");
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found in the database.");
   }
 
   // If valid, delete the OTP from the database
@@ -353,7 +336,7 @@ const resetPassword = async (
   });
 
   if (!updatedUser) {
-    throw new AppError(
+    throw new ApiError(
       httpStatus.BAD_REQUEST,
       "User not found in the database."
     );
@@ -382,7 +365,7 @@ const changePassword = async (payload: {
   });
 
   if (!userData) {
-    throw new AppError(
+    throw new ApiError(
       httpStatus.NOT_FOUND,
       "User not found!, If you have already have account please reset your password"
     );
@@ -390,7 +373,7 @@ const changePassword = async (payload: {
 
   // Check if the user status is BLOCKED
   if (userData.status === UserStatusEnum.blocked) {
-    throw new AppError(
+    throw new ApiError(
       httpStatus.FORBIDDEN,
       "Your account has been blocked. Please contact support."
     );
@@ -403,7 +386,7 @@ const changePassword = async (payload: {
   );
 
   if (!isCorrectPassword) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Password incorrect");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Password incorrect");
   }
   // Hash the user's password
 
@@ -419,7 +402,7 @@ const changePassword = async (payload: {
     },
   });
   if (!updatedUser) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found in the database.");
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found in the database.");
   }
   return {
     message: "password updated successfully",
@@ -434,5 +417,4 @@ export const AuthServices = {
   verifyOtpCode,
   resetPassword,
   changePassword,
-  findUniqUserName
 };

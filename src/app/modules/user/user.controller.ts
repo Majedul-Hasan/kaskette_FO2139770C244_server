@@ -5,6 +5,8 @@ import catchAsync from '../../helpers/catchAsync';
 import { Request, Response } from 'express';
 import pickValidFields from '../../utils/pickValidFields';
 
+
+
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const options = pickValidFields(req.query, ['limit', 'page', 'email']);
 
@@ -50,6 +52,7 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const updateMyProfileImage = catchAsync(async (req: Request, res: Response) => {
   const id = req.user.id;
   const file = req.file as any;
@@ -63,7 +66,6 @@ const updateMyProfileImage = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 const updateUserRoleStatus = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await UserServices.updateUserRoleStatusIntoDB(id, req.body);
@@ -75,6 +77,23 @@ const updateUserRoleStatus = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const findUniqUserName = catchAsync(async (req, res) => {
+  const { userName } = req.body;
+  if (!userName) {
+    return sendResponse(res, {
+      statusCode: httpStatus.BAD_REQUEST,
+      message: 'userName is required',
+    });
+  }
+  const result = await UserServices.findUniqUserName(userName);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'username is available',
+    data: result,
+  });
+});
+
+
 export const UserControllers = {
   getAllUsers,
   getMyProfile,
@@ -82,4 +101,5 @@ export const UserControllers = {
   updateMyProfile,
   updateMyProfileImage,
   updateUserRoleStatus,
+  findUniqUserName
 };
