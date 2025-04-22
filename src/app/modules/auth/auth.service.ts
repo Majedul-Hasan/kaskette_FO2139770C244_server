@@ -12,6 +12,23 @@ import { User, UserStatusEnum, UserRoleEnum } from "@prisma/client";
 import { jwtHelpers } from "../../helpers/jwtHelpers";
 import { generateOTP, saveOrUpdateOTP, sendOTPEmail } from "./auth.utils";
 
+const findUniqUserName = async (userName: string) => {
+  console.log("userName", userName);
+  
+  // Check if the username already exists in the database 
+  const existingUser = await prisma.user.findUnique({
+    where: { userName },
+  });
+  // If the username exists, throw an error
+  if (existingUser) {
+    throw new AppError(httpStatus.CONFLICT, "Username already exists");
+  }
+  // If the username is unique, return a success message
+  return {  
+    message: "Username is available",
+  };
+};
+
 const registrationNewUser = async (payload: User) => {
   
   return await prisma.$transaction(async (prisma) => {
@@ -417,4 +434,5 @@ export const AuthServices = {
   verifyOtpCode,
   resetPassword,
   changePassword,
+  findUniqUserName
 };

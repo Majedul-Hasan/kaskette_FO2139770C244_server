@@ -6,7 +6,7 @@ import z from "zod";
 
 const registerUserSchema = z.object({
   body: z.object({
-    userName: z.string().min(3, "Name must be at least 3 characters"),
+    userName: z.string().min(3, "userName must be at least 3 characters"),
     name: z.string().min(3, "Name must be at least 3 characters"),
     dateOfBirth: z
       .string({
@@ -129,11 +129,18 @@ const forgotPassword = z.object({
   }),
 });
 
+const findUniqueUsernameValidation = z.object({
+  body: z.object({
+    userName: z.string().min(3, "userName must be at least 3 characters"),
+  }),
+});
+
 export const authValidation = {
   loginUserSchema,
   registerUserSchema,
   passwordResetSchema,
   changePasswordValidationSchema,
   verifyOtpSchema,
-  forgotPassword
+  forgotPassword,
+  findUniqueUsernameValidation
 };
