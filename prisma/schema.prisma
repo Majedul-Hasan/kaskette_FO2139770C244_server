@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  userName      String?         @unique
+  name          String?
+  age           Int?
+  profilePic    String?
+  images        String[]
+  gender        UserGenderEnum?
+  interestedIn  UserInterestedInEnum?  
+  dateOfBirth   DateTime?
+  latitude      Float?
+  longitude     Float?
+  address       String?
+  language      String?
+  profession    String?
+  role          UserRoleEnum    @default(USER)
+  password      String
+  status        UserStatusEnum  @default(in_progress)
+  email         String          @unique
+  emailVerified Boolean?        @default(false)
+  phone         String?
+  phoneVerified Boolean?        @default(false)
+  isDelete      Boolean         @default(false)
+  fcmToken      String?
+  isVerified    Boolean         @default(false)
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  // Relationship
+
+  @@map("users")
+}
+
+model Payment {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  subscription  String        @db.ObjectId // FK
+  user          String
+  amount        Float
+  status        PaymentStatus
+  method        PaymentMethod
+  transactionId String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("payments")
+}
+
+model Otp {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  hexCode   String   @unique
+  otp       String
+  expiry    DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("otps")
+}
+
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId // The instructor who will receive the notification
+  title     String
+  message   String // The message content of the notification
+  body      String
+  isRead    Boolean  @default(false) // Indicates whether the notification has been read
+  createdAt DateTime @default(now()) // Timestamp of when the notification was created 
+
+  isClicked Boolean @default(false) // Indicates whether the notification has been read
+  // User      User    @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model Terms {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  description String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("terms")
+}
+
+model Policy {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  description String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("policy")
+}
+
+// Enum
+
+enum UserRoleEnum {
+  SUPER_ADMIN
+  USER
+}
+enum UserInterestedInEnum {
+  BOYS
+  GIRLS
+  BOTH
+}
+
+enum UserGenderEnum {
+  MALE
+  FEMALE
+}
+
+enum UserStatusEnum {
+  in_progress
+  deactivated
+  blocked
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+enum subscription_status_enum {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+enum booking_status_enum {
+  BOOKED
+  CANCELLED
+  COMPLETED
+}
+
+enum OtpType {
+  LOGIN
+  FORGOT_PASSWORD
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PAYPAL
+}
