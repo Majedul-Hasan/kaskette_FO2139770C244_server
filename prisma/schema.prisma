@@ -18,6 +18,7 @@ model User {
   latitude      Float?
   longitude     Float?
   address       String?
+  bio           String?
   language      String?
   profession    String?
   role          UserRoleEnum          @default(USER)

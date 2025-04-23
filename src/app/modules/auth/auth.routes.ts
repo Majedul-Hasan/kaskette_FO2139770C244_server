@@ -46,11 +46,6 @@ router.post(
   AuthControllers.changePassword
 );
 
-// router.get(
-//   '/me',
-//   auth("USER"),
-//   AuthControllers.getMe
-// );
 
 export const AuthRouters = router;
 

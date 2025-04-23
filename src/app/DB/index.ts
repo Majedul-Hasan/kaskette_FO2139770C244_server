@@ -8,7 +8,6 @@ const superAdminData = {
   name: 'Super Admin',
   email: 'admin@gmail.com',
   password: '123456',
-  age: 25,
   role: UserRoleEnum.SUPER_ADMIN,
   isVerified: true
 };

@@ -90,5 +90,4 @@ export const AuthControllers = {
   resetPassword,
   changePassword,
   verifiedEmail,
-  
 };

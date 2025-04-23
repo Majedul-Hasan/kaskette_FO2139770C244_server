@@ -1,11 +1,11 @@
-import prisma from '../../config/prisma';
-import ApiError from '../../errors/ApiError';
-import httpStatus from 'http-status';
-import { IPaginationOptions } from '../../interface/pagination.type';
-import { paginationHelper } from '../../helpers/paginationHelper';
+import prisma from "../../config/prisma";
+import ApiError from "../../errors/ApiError";
+import httpStatus from "http-status";
+import { IPaginationOptions } from "../../interface/pagination.type";
+import { paginationHelper } from "../../helpers/paginationHelper";
 import fs from "fs";
 import path from "path";
-import { User } from '@prisma/client';
+import { User } from "@prisma/client";
 
 const getAllUsersFromDB = async (
   options: IPaginationOptions & { email?: string }
@@ -14,11 +14,11 @@ const getAllUsersFromDB = async (
 
   const emailFilter: any = options.email
     ? {
-      email: {
-        contains: options.email, // Case-insensitive search
-        mode: 'insensitive',
-      },
-    }
+        email: {
+          contains: options.email, // Case-insensitive search
+          mode: "insensitive",
+        },
+      }
     : {};
 
   const [result, total, totalTerms] = await prisma.$transaction([
@@ -27,12 +27,12 @@ const getAllUsersFromDB = async (
       take: limit,
       where: {
         role: {
-          not: 'SUPER_ADMIN',
+          not: "SUPER_ADMIN",
         },
         ...emailFilter,
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
       select: {
         id: true,
@@ -43,21 +43,18 @@ const getAllUsersFromDB = async (
         status: true,
         createdAt: true,
         updatedAt: true,
-
       },
     }),
     prisma.user.count({
       where: {
         role: {
-          not: 'SUPER_ADMIN',
+          not: "SUPER_ADMIN",
         },
         ...emailFilter,
       },
     }),
     prisma.terms.count({}),
   ]);
-
-
 
   return {
     data: result,
@@ -78,8 +75,10 @@ const getMyProfileFromDB = async (id: string) => {
     select: {
       id: true,
       name: true,
-      phone: true,
-      email: true,
+      images: true,
+      bio: true,
+      latitude: true,
+      longitude: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -103,44 +102,49 @@ const getUserDetailsFromDB = async (id: string) => {
     },
   });
 
-
-
-
   return user;
 };
 
-const updateMyProfileIntoDB = async (
-  id: string,
-  payload: Partial<User>
-) => {
-  if (!id) {
+const updateMyProfileIntoDB = async ( payload: Partial<User>, file: any, protocol:string , host: string, userId: string) => {
+  if (!userId) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User ID is required");
   }
-
   // Check if user exists
   const existingUser = await prisma.user.findUnique({
-    where: { id },
+    where: { id: userId },
   });
-
   if (!existingUser) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
+  // Check if there is an existing image and delete it from the file system
+  if (existingUser.images) {
+    const filenames = existingUser.images.map(image => image.split("/uploads/")[1]); 
+    for (const filename of filenames) {
+      const imagePath = path.join(process.cwd(), "uploads", filename);
 
-
-
+      try {
+        // Check if the image exists on the file system
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath); // Remove the existing image file from the server
+          console.log("Deleted the existing image:", imagePath);
+        } else {
+          console.log("Image not found, skipping deletion.");
+        }
+      } catch (err) {
+        console.error("Error deleting existing image:", err);
+      }
+    }
+  }
   // Prepare the updated data object
   const updatedData = {
     ...payload,
+    images: file
+      ? file.map((img: any) => `${protocol}://${host}/uploads/${img.filename}`)
+      : existingUser.images, // Update the image if provided
   };
-    // Check if dateOfBirth exists and is a valid string
-    if (updatedData.dateOfBirth && typeof updatedData.dateOfBirth === 'string') {
-      // Ensure it's a valid date in ISO format
-      updatedData.dateOfBirth = new Date(updatedData.dateOfBirth);
-    }
-
   const result = await prisma.user.update({
     where: {
-      id: id,
+      id: userId,
     },
     data: updatedData,
     select: {
@@ -148,14 +152,12 @@ const updateMyProfileIntoDB = async (
       name: true,
       role: true,
       email: true,
-      phone: true,
-      dateOfBirth: true,
-      gender: true,
-      address: true,
+      images: true,
       createdAt: true,
       updatedAt: true,
     },
   });
+
   return result;
 };
 
@@ -163,7 +165,7 @@ const updateMyProfileImageIntoDB = async (
   id: string,
   file: any,
   protocol: string,
-  host: string,
+  host: string
 ) => {
   if (!id) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User ID is required");
@@ -180,7 +182,7 @@ const updateMyProfileImageIntoDB = async (
 
   // Check if there is an existing image and delete it from the file system
   if (existingUser.profilePic) {
-    const filename = existingUser.profilePic.split("/uploads/")[1]; // Extract the filename from the URL (this part should match the file path)
+    const filename = existingUser.profilePic.split("/uploads/")[1]; 
     const imagePath = path.join(process.cwd(), "uploads", filename);
 
     try {
@@ -230,10 +232,8 @@ const updateUserRoleStatusIntoDB = async (id: string, payload: any) => {
   return result;
 };
 
-const findUniqUserName = async (userName: string) => {  
-  
-
-  // Check if the username already exists in the database 
+const findUniqUserName = async (userName: string) => {
+  // Check if the username already exists in the database
   const existingUser = await prisma.user.findUnique({
     where: { userName },
   });
@@ -242,7 +242,7 @@ const findUniqUserName = async (userName: string) => {
     throw new ApiError(httpStatus.CONFLICT, "Username already exists");
   }
   // If the username is unique, return a success message
-  return {  
+  return {
     message: "Username is available",
   };
 };
@@ -254,5 +254,5 @@ export const UserServices = {
   updateMyProfileIntoDB,
   updateMyProfileImageIntoDB,
   updateUserRoleStatusIntoDB,
-  findUniqUserName
+  findUniqUserName,
 };

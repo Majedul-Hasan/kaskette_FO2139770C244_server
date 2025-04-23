@@ -14,12 +14,12 @@ router.get(
   UserControllers.getAllUsers
 );
 
-router.get('/me', auth(), UserControllers.getMyProfile);
+router.get('/me', auth("USER"), UserControllers.getMyProfile);
 
 router.get('/:id', auth(), UserControllers.getUserDetails);
 
 router.put(
-  '/update-profile',
+  '/update-profile2',
   auth('USER'),
   validateRequest(UserValidations.updateProfileSchema),
   parseBodyData,
@@ -27,11 +27,11 @@ router.put(
 );
 
 router.put(
-  '/update-profile-image',
+  '/update-profile',
   auth('USER'),
-  fileUploader.uploadProfileImage,
+  fileUploader.uploadMultiple,
   parseBodyData,
-  UserControllers.updateMyProfileImage
+  UserControllers.updateMyProfile
 );
 
 router.put(
