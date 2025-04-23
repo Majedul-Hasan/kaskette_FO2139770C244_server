@@ -37,23 +37,24 @@ model User {
   deletedAt DateTime?
 
   // Relationship
+  feedbacks Feedback[]
 
   @@map("users")
 }
 
 model Feedback {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId           Int?
+  userId           String   @db.ObjectId
+  user             User     @relation(fields: [userId], references: [id])
   appVersion       String?
-  deviceInfo       String?
-  rating           Int?
+  rating           Int
   selectedOpinions String[]
   otherOpinion     String?
-  comment          String?
+  comment          String
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
- @@map("feedbacks")
+  @@map("feedbacks")
 }
 
 model Payment {

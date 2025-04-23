@@ -2,7 +2,6 @@ import httpStatus from 'http-status';
 import catchAsync from '../../helpers/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AuthServices } from './auth.service';
-import { any } from 'zod';
 
 
 const registrationNewUser = catchAsync(async (req, res) => {
