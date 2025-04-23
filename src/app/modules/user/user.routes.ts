@@ -39,4 +39,12 @@ router.post(
   validateRequest(UserValidations.findUniqueUsernameValidation),
   UserControllers.findUniqUserName
 );
+
+// soft delete account
+router.put(
+  '/soft-delete',
+  auth('USER'),
+  UserControllers.softDelete
+);
+
 export const UserRouters = router;

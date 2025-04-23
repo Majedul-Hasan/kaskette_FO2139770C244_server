@@ -83,6 +83,16 @@ const findUniqUserName = catchAsync(async (req, res) => {
   });
 });
 
+const softDelete = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const result = await UserServices.softDelete(userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Account deleted successfully',
+    data: result,
+  });
+});
 
 export const UserControllers = {
   getAllUsers,
@@ -90,5 +100,6 @@ export const UserControllers = {
   getUserDetails,
   updateMyProfile,
   pauseOrActiveAccount,
-  findUniqUserName
+  findUniqUserName,
+  softDelete
 };

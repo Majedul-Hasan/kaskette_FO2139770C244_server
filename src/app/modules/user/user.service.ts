@@ -204,6 +204,36 @@ const findUniqUserName = async (userName: string) => {
   };
 };
 
+const softDelete = async (id: string) => {
+  // Check if the user exists
+  const existingUser = await prisma.user.findUnique({
+    where: { id },
+  });
+  if (!existingUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  // Soft delete the user by setting the deletedAt field to the current date
+  const result = await prisma.user.update({
+    where: { id },
+    data: { 
+      isDelete: true, 
+      status: UserStatusEnum.deactivated,
+      deletedAt: new Date(), 
+     },
+    select: {
+      id: true,
+      email: true,
+      status: true,
+      createdAt: true,
+      deletedAt: true,
+      isDelete: true,
+    },
+
+  });
+
+  return result;
+}
 export const UserServices = {
   getAllUsersFromDB,
   getMyProfileFromDB,
@@ -211,4 +241,5 @@ export const UserServices = {
   updateMyProfileIntoDB,
   pauseOrActiveAccountIntoDB,
   findUniqUserName,
+  softDelete
 };
