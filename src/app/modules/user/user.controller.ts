@@ -56,13 +56,13 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-const updateUserRoleStatus = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const result = await UserServices.updateUserRoleStatusIntoDB(id, req.body);
+const pauseOrActiveAccount = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const result = await UserServices.pauseOrActiveAccountIntoDB(userId, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
-    message: 'User updated successfully',
+    message: `Account ${req.body.status} successfully`,
     data: result,
   });
 });
@@ -89,6 +89,6 @@ export const UserControllers = {
   getMyProfile,
   getUserDetails,
   updateMyProfile,
-  updateUserRoleStatus,
+  pauseOrActiveAccount,
   findUniqUserName
 };

@@ -28,9 +28,10 @@ router.put(
 );
 
 router.put(
-  '/update-user/:id',
-  auth('SUPER_ADMIN'),
-  UserControllers.updateUserRoleStatus
+  '/pause-or-active-account',
+  auth('USER'),
+  validateRequest(UserValidations.pauseOrActiveAccountIntoDB),
+  UserControllers.pauseOrActiveAccount
 );
 
 router.post(

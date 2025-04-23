@@ -2,10 +2,12 @@ import { UserGenderEnum, UserStatusEnum, UserRoleEnum } from "@prisma/client";
 import z from "zod";
 const registerUserSchema = z.object({
   body: z.object({
-    subscription: z.string({
-      invalid_type_error: "subscription must be a string",
-      required_error: "subscription is required",
-    }).optional(),
+    subscription: z
+      .string({
+        invalid_type_error: "subscription must be a string",
+        required_error: "subscription is required",
+      })
+      .optional(),
     bookings: z.array(z.string()),
     name: z.string().min(3, "Name must be at least 3 characters"),
     age: z.number().int().positive("Age must be a positive integer"),
@@ -99,10 +101,24 @@ const findUniqueUsernameValidation = z.object({
   }),
 });
 
+const pauseOrActiveAccountIntoDB = z.object({
+  body: z.object({
+    status: z.nativeEnum(UserStatusEnum).refine(
+      (val) => Object.values(UserStatusEnum).includes(val),
+      (val) => ({
+        message: `Invalid Status value: '${val}', expected one of [${Object.values(
+          UserStatusEnum
+        ).join(", ")}]`,
+      })
+    ),
+  }),
+});
+
 export const UserValidations = {
   registerUserSchema,
   updateProfileSchema,
   forgotPassword,
   verifyOtp,
-  findUniqueUsernameValidation
+  findUniqueUsernameValidation,
+  pauseOrActiveAccountIntoDB
 };

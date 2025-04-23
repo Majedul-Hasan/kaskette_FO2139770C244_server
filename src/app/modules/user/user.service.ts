@@ -5,7 +5,7 @@ import { IPaginationOptions } from "../../interface/pagination.type";
 import { paginationHelper } from "../../helpers/paginationHelper";
 import fs from "fs";
 import path from "path";
-import { User } from "@prisma/client";
+import { User, UserStatusEnum } from "@prisma/client";
 
 const getAllUsersFromDB = async (
   options: IPaginationOptions & { email?: string }
@@ -105,8 +105,13 @@ const getUserDetailsFromDB = async (id: string) => {
   return user;
 };
 
-const updateMyProfileIntoDB = async ( payload: Partial<User>, file: any, protocol:string , host: string, userId: string) => {
-
+const updateMyProfileIntoDB = async (
+  payload: Partial<User>,
+  file: any,
+  protocol: string,
+  host: string,
+  userId: string
+) => {
   // Check if user exists
   const existingUser = await prisma.user.findUnique({
     where: { id: userId },
@@ -117,7 +122,9 @@ const updateMyProfileIntoDB = async ( payload: Partial<User>, file: any, protoco
 
   // Check if there is an existing image and delete it from the file system
   if (existingUser.images) {
-    const filenames = existingUser.images.map(image => image.split("/uploads/")[1]); 
+    const filenames = existingUser.images.map(
+      (image) => image.split("/uploads/")[1]
+    );
     for (const filename of filenames) {
       const imagePath = path.join(process.cwd(), "uploads", filename);
 
@@ -160,14 +167,24 @@ const updateMyProfileIntoDB = async ( payload: Partial<User>, file: any, protoco
   return result;
 };
 
-
-
-const updateUserRoleStatusIntoDB = async (id: string, payload: any) => {
+const pauseOrActiveAccountIntoDB = async (
+  id: string,
+  payload: { status: Partial<UserStatusEnum> }
+) => {
   const result = await prisma.user.update({
     where: {
       id: id,
     },
     data: payload,
+    select: {
+      id: true,
+      name: true,
+      role: true,
+      email: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
   return result;
 };
@@ -192,6 +209,6 @@ export const UserServices = {
   getMyProfileFromDB,
   getUserDetailsFromDB,
   updateMyProfileIntoDB,
-  updateUserRoleStatusIntoDB,
+  pauseOrActiveAccountIntoDB,
   findUniqUserName,
 };
