@@ -1,42 +1,46 @@
-import express from 'express';
-import validateRequest from '../../middlewares/validateRequest';
-import { authValidation } from './auth.validation';
-import { AuthControllers } from './auth.controller';
-import auth, {checkOTP} from '../../middlewares/auth';
-import { UserValidations } from '../user/user.validation';
+import express from "express";
+import validateRequest from "../../middlewares/validateRequest";
+import { authValidation } from "./auth.validation";
+import { AuthControllers } from "./auth.controller";
+import auth, { checkOTP } from "../../middlewares/auth";
+import { UserValidations } from "../user/user.validation";
+import { fileUploader } from "../../middlewares/fileUploader";
+import parseBodyData from "../../middlewares/parseBodyData";
 const router = express.Router();
 
-
-
-router.post('/register',
-  validateRequest(authValidation.registerUserSchema),
-  AuthControllers.registrationNewUser);
+router.post(
+  "/register",
+  fileUploader.uploadMultiple,
+  parseBodyData,
+  // validateRequest(authValidation.registerUserSchema),
+  AuthControllers.registrationNewUser
+);
 
 router.post(
-  '/login',
+  "/login",
   validateRequest(authValidation.loginUserSchema),
   AuthControllers.loginUser
 );
 router.post(
-  '/forgot-password',
+  "/forgot-password",
   validateRequest(authValidation.forgotPassword),
   AuthControllers.forgotPassword
 );
 
 router.post(
-  '/reset-password',
+  "/reset-password",
   checkOTP(),
   validateRequest(authValidation.passwordResetSchema),
   AuthControllers.resetPassword
 );
 router.post(
-  '/verify-otp',
+  "/verify-otp",
   validateRequest(authValidation.verifyOtpSchema),
   AuthControllers.verifiedEmail
 );
 
 router.post(
-  '/change-password',
+  "/change-password",
   validateRequest(authValidation.changePasswordValidationSchema),
   auth("USER"),
   AuthControllers.changePassword
@@ -49,6 +53,5 @@ router.post(
 // );
 
 export const AuthRouters = router;
-
 
 // const identifier = crypto.randomBytes(16).toString('hex');

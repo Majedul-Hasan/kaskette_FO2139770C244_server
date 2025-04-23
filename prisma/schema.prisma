@@ -8,33 +8,31 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  userName      String?         @unique
+  id            String                @id @default(auto()) @map("_id") @db.ObjectId
+  userName      String?               @unique
   name          String?
-  age           Int?
-  profilePic    String?
   images        String[]
   gender        UserGenderEnum?
-  interestedIn  UserInterestedInEnum?  
-  dateOfBirth   DateTime?
+  interestedIn  UserInterestedInEnum?
+  dob           DateTime?
   latitude      Float?
   longitude     Float?
   address       String?
   language      String?
   profession    String?
-  role          UserRoleEnum    @default(USER)
+  role          UserRoleEnum          @default(USER)
   password      String
-  status        UserStatusEnum  @default(in_progress)
-  email         String          @unique
-  emailVerified Boolean?        @default(false)
+  status        UserStatusEnum        @default(in_progress)
+  email         String                @unique
+  emailVerified Boolean?              @default(false)
   phone         String?
-  phoneVerified Boolean?        @default(false)
-  isDelete      Boolean         @default(false)
+  phoneVerified Boolean?              @default(false)
+  isDelete      Boolean               @default(false)
   fcmToken      String?
-  isVerified    Boolean         @default(false)
+  isVerified    Boolean               @default(false)
 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relationship
 
@@ -106,6 +104,7 @@ enum UserRoleEnum {
   SUPER_ADMIN
   USER
 }
+
 enum UserInterestedInEnum {
   BOYS
   GIRLS

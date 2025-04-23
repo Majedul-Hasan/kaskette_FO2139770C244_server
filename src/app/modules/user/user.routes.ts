@@ -3,7 +3,6 @@ import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { UserValidations } from './user.validation';
 import { UserControllers } from './user.controller';
-// import parseBodyData from '../../../helpars/parseBodyData';
 import { UserRoleEnum as Role } from '@prisma/client';
 import { fileUploader } from '../../middlewares/fileUploader';
 import parseBodyData from '../../middlewares/parseBodyData';

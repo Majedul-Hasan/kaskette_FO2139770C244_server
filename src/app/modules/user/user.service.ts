@@ -231,8 +231,8 @@ const updateUserRoleStatusIntoDB = async (id: string, payload: any) => {
 };
 
 const findUniqUserName = async (userName: string) => {  
-  console.log("Checking for unique username:", userName);
   
+
   // Check if the username already exists in the database 
   const existingUser = await prisma.user.findUnique({
     where: { userName },

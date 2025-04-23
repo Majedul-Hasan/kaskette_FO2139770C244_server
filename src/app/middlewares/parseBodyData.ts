@@ -4,6 +4,8 @@ import ApiError from "../errors/ApiError";
 // Assuming AppError is your custom error class
 
 const parseBodyData = (req: Request, res: Response, next: NextFunction) => {
+  console.log("Request body before parsing:", req.body);
+  
   if (req.body && req.body.bodyData) {
     try {
       req.body.bodyData = JSON.parse(req.body.bodyData);

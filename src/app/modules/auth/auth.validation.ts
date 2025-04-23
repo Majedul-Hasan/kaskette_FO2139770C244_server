@@ -1,14 +1,11 @@
-import {
-  UserGenderEnum,
-  UserInterestedInEnum,
-} from "@prisma/client";
+import { UserGenderEnum, UserInterestedInEnum } from "@prisma/client";
 import z from "zod";
 
 const registerUserSchema = z.object({
   body: z.object({
     userName: z.string().min(3, "userName must be at least 3 characters"),
     name: z.string().min(3, "Name must be at least 3 characters"),
-    dateOfBirth: z
+    dob: z
       .string({
         required_error: "Date of birth is required",
         invalid_type_error: "Date of birth must be a string",
@@ -17,7 +14,6 @@ const registerUserSchema = z.object({
         message: "Date of birth must be a valid date",
       })
       .transform((val) => new Date(val)),
-    age: z.number().int().positive("Age must be a positive integer"),
     email: z.string().email("Invalid email format"),
     phone: z
       .string({
@@ -64,6 +60,10 @@ const registerUserSchema = z.object({
       })
       .min(-180, "Longitude must be between -180 and 180")
       .max(180, "Longitude must be between -180 and 180"),
+    fcmToken: z.string({
+      required_error: "fcmToken is required",
+      invalid_type_error: "fcmToken must be a string",
+    }),
   }),
 });
 
@@ -116,7 +116,6 @@ const verifyOtpSchema = z.object({
   }),
 });
 
-
 const forgotPassword = z.object({
   body: z.object({
     email: z
@@ -128,7 +127,6 @@ const forgotPassword = z.object({
       }),
   }),
 });
-
 
 export const authValidation = {
   loginUserSchema,

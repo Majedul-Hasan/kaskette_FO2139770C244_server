@@ -2,13 +2,17 @@ import httpStatus from 'http-status';
 import catchAsync from '../../helpers/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { AuthServices } from './auth.service';
+import { any } from 'zod';
 
 
 const registrationNewUser = catchAsync(async (req, res) => {
-  const result = await AuthServices.registrationNewUser(req.body);
+  const file = req.files as any //as Express.Multer.File[];
+  const host = req.header('host') || '';
+
+  const result = await AuthServices.registrationNewUser(req.body.bodyData, file, req.protocol, host);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
-    message: 'User created successfully',
+    message: 'verify your otp code',
     data: result,
   });
 });

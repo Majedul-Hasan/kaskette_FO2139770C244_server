@@ -12,8 +12,14 @@ import { jwtHelpers } from "../../helpers/jwtHelpers";
 import { generateOTP, saveOrUpdateOTP, sendOTPEmail } from "./auth.utils";
 import ApiError from "../../errors/ApiError";
 
-const registrationNewUser = async (payload: User) => {
-  
+const registrationNewUser = async (payload: User, file: any, protocol:string , host: string) => {
+
+  // Check if the file is an image
+  if (file && file.length > 0) {
+    payload.images = file.map((file: any) => `${protocol}://${host}/${file.path}`); // Set the profilePic field to the image URL
+  }
+
+
   return await prisma.$transaction(async (prisma) => {
     // Check if email is already registered and Verified
     const existingUser = await prisma.user.findUnique({
@@ -40,8 +46,7 @@ const registrationNewUser = async (payload: User) => {
         data: {
           userName: payload.userName,
           name: payload.name,
-          dateOfBirth: payload.dateOfBirth,
-          age: payload.age,
+          dob: payload.dob,
           gender: payload.gender,
           interestedIn: payload.interestedIn,
           address: payload.address,
@@ -50,8 +55,9 @@ const registrationNewUser = async (payload: User) => {
           email: payload.email,
           phone: payload.phone,
           password: hashPassword,
-          profilePic: payload.profilePic,
+          images: payload.images,
           role: UserRoleEnum.USER,
+          fcmToken: payload.fcmToken,
         },
         select: {
           id: true,
@@ -59,6 +65,7 @@ const registrationNewUser = async (payload: User) => {
           name: true,
           role: true,
           status: true,
+          fcmToken: true,
           isVerified: true,
           createdAt: true,
           updatedAt: true,
@@ -115,16 +122,17 @@ const verifyEmail = async (hexCode: string, otpCode: string) => {
     // Update user verification status
     const updatedUser = await prisma.user.update({
       where: { email: otpRecord.email },
-      data: { isVerified: true },
+      data: { isVerified: true, status:UserStatusEnum.in_progress, emailVerified: true},
       select: {
         id: true,
         email: true,
+        images: true,
         name: true,
         role: true,
         status: true,
+        emailVerified: true,
         isVerified: true,
-        createdAt: true,
-        updatedAt: true,
+        fcmToken: true,
       },
     });
 
@@ -174,16 +182,16 @@ const loginUserFromDB = async (payload: {
   }
 
   // Update the FCM token if provided
-  // if (payload?.fcmToken) {
-  //   await prisma.user.update({
-  //     where: {
-  //       email: payload.email, // Use email as the unique hexCode for updating
-  //     },
-  //     data: {
-  //       fcmToken: payload.fcmToken,
-  //     },
-  //   });
-  // }
+  if (payload?.fcmToken) {
+    await prisma.user.update({
+      where: {
+        email: payload.email, // Use email as the unique hexCode for updating
+      },
+      data: {
+        fcmToken: payload.fcmToken,
+      },
+    });
+  }
 
   // Generate an access token
   const accessToken = jwtHelpers.generateToken(
