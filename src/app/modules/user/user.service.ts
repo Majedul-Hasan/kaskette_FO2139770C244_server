@@ -106,9 +106,7 @@ const getUserDetailsFromDB = async (id: string) => {
 };
 
 const updateMyProfileIntoDB = async ( payload: Partial<User>, file: any, protocol:string , host: string, userId: string) => {
-  if (!userId) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User ID is required");
-  }
+
   // Check if user exists
   const existingUser = await prisma.user.findUnique({
     where: { id: userId },
@@ -116,6 +114,7 @@ const updateMyProfileIntoDB = async ( payload: Partial<User>, file: any, protoco
   if (!existingUser) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
+
   // Check if there is an existing image and delete it from the file system
   if (existingUser.images) {
     const filenames = existingUser.images.map(image => image.split("/uploads/")[1]); 
@@ -161,66 +160,7 @@ const updateMyProfileIntoDB = async ( payload: Partial<User>, file: any, protoco
   return result;
 };
 
-const updateMyProfileImageIntoDB = async (
-  id: string,
-  file: any,
-  protocol: string,
-  host: string
-) => {
-  if (!id) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User ID is required");
-  }
 
-  // Check if user exists
-  const existingUser = await prisma.user.findUnique({
-    where: { id },
-  });
-
-  if (!existingUser) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
-
-  // Check if there is an existing image and delete it from the file system
-  if (existingUser.profilePic) {
-    const filename = existingUser.profilePic.split("/uploads/")[1]; 
-    const imagePath = path.join(process.cwd(), "uploads", filename);
-
-    try {
-      // Check if the image exists on the file system
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath); // Remove the existing image file from the server
-        console.log("Deleted the existing image:", imagePath);
-      } else {
-        console.log("Image not found, skipping deletion.");
-      }
-    } catch (err) {
-      console.error("Error deleting existing image:", err);
-    }
-  }
-  // Prepare the updated data object
-  const updatedData = {
-    image: file
-      ? `${protocol}://${host}/uploads/${file.filename}`
-      : existingUser.profilePic, // Update the image if provided
-  };
-
-  const result = await prisma.user.update({
-    where: {
-      id: id,
-    },
-    data: updatedData,
-    select: {
-      id: true,
-      name: true,
-      role: true,
-      email: true,
-      profilePic: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
-  return result;
-};
 
 const updateUserRoleStatusIntoDB = async (id: string, payload: any) => {
   const result = await prisma.user.update({
@@ -252,7 +192,6 @@ export const UserServices = {
   getMyProfileFromDB,
   getUserDetailsFromDB,
   updateMyProfileIntoDB,
-  updateMyProfileImageIntoDB,
   updateUserRoleStatusIntoDB,
   findUniqUserName,
 };

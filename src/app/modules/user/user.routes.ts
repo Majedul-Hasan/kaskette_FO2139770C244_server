@@ -18,13 +18,6 @@ router.get('/me', auth("USER"), UserControllers.getMyProfile);
 
 router.get('/:id', auth(), UserControllers.getUserDetails);
 
-router.put(
-  '/update-profile2',
-  auth('USER'),
-  validateRequest(UserValidations.updateProfileSchema),
-  parseBodyData,
-  UserControllers.updateMyProfile
-);
 
 router.put(
   '/update-profile',

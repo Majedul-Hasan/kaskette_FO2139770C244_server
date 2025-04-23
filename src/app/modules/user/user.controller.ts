@@ -55,18 +55,6 @@ const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const updateMyProfileImage = catchAsync(async (req: Request, res: Response) => {
-  const id = req.user.id;
-  const file = req.file as any;
-  const host = req.header("host") || '';
-  const result = await UserServices.updateMyProfileImageIntoDB(id, file, req.protocol, host);
-  
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    message: 'User profile updated successfully',
-    data: result,
-  });
-});
 
 const updateUserRoleStatus = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -101,7 +89,6 @@ export const UserControllers = {
   getMyProfile,
   getUserDetails,
   updateMyProfile,
-  updateMyProfileImage,
   updateUserRoleStatus,
   findUniqUserName
 };
