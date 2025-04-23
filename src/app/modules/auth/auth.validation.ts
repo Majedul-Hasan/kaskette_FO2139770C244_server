@@ -112,7 +112,6 @@ const verifyOtpSchema = z.object({
       .string({
         required_error: "hexCode is required",
       })
-      .length(32, "hexCode must be exactly 32 characters long"),
   }),
 });
 

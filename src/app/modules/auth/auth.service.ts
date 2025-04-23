@@ -11,98 +11,99 @@ import { User, UserStatusEnum, UserRoleEnum } from "@prisma/client";
 import { jwtHelpers } from "../../helpers/jwtHelpers";
 import { generateOTP, saveOrUpdateOTP, sendOTPEmail } from "./auth.utils";
 import ApiError from "../../errors/ApiError";
+import { S3Uploader } from "../../lib/S3Uploader";
 
 const registrationNewUser = async (payload: User, file: any, protocol:string , host: string) => {
 
   // Check if the file is an image
   if (file && file.length > 0) {
-    payload.images = file.map((file: any) => `${protocol}://${host}/${file.path}`); 
+    // Upload multiple files to S3 
+    const uploadPromises = file.map((file: any) => S3Uploader.uploadToS3(file, "user"));
+    const uploadResults = await Promise.all(uploadPromises);
+    payload.images = uploadResults.map((result) => result.Location); // Update the payload with S3 URLs
+
   }
+  // console.log("file 🗃️", file);
+  // console.log("images 🎦", payload.images)
+  return await prisma.$transaction(async (prisma) => {
+    // Check if email is already registered and Verified
+    const existingUser = await prisma.user.findUnique({
+      where: { email: payload.email },
+    });
 
-  console.log("file 🗃️", file);
-  console.log("images 🎦", payload.images);
-  
+    if (existingUser && existingUser.isVerified) {
+      throw new ApiError(
+        httpStatus.CONFLICT,
+        "This email is already registered"
+      );
+    }
 
+    // Hash the password
+    const hashPassword = await bcrypt.hash(
+      payload.password,
+      Number(config.bcrypt_salt_rounds)
+    );
 
-  // return await prisma.$transaction(async (prisma) => {
-  //   // Check if email is already registered and Verified
-  //   const existingUser = await prisma.user.findUnique({
-  //     where: { email: payload.email },
-  //   });
+    let newUser;
+    // Create new user if not existing
+    if (!existingUser) {
+      newUser = await prisma.user.create({
+        data: {
+          userName: payload.userName,
+          name: payload.name,
+          dob: payload.dob,
+          gender: payload.gender,
+          interestedIn: payload.interestedIn,
+          address: payload.address,
+          latitude: payload.latitude,
+          longitude: payload.longitude,
+          email: payload.email,
+          phone: payload.phone,
+          password: hashPassword,
+          images: payload.images,
+          role: UserRoleEnum.USER,
+          fcmToken: payload.fcmToken,
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          status: true,
+          fcmToken: true,
+          isVerified: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+    } else {
+      newUser = existingUser;
+    }
 
-  //   if (existingUser && existingUser.isVerified) {
-  //     throw new ApiError(
-  //       httpStatus.CONFLICT,
-  //       "This email is already registered"
-  //     );
-  //   }
+    const { otpCode, expiry, hexCode } = generateOTP();
 
-  //   // Hash the password
-  //   const hashPassword = await bcrypt.hash(
-  //     payload.password,
-  //     Number(config.bcrypt_salt_rounds)
-  //   );
+    // Save OTP to database
+    const userData = await saveOrUpdateOTP(
+      newUser.email,
+      otpCode,
+      expiry,
+      hexCode,
+      prisma
+    );
 
-  //   let newUser;
-  //   // Create new user if not existing
-  //   if (!existingUser) {
-  //     newUser = await prisma.user.create({
-  //       data: {
-  //         userName: payload.userName,
-  //         name: payload.name,
-  //         dob: payload.dob,
-  //         gender: payload.gender,
-  //         interestedIn: payload.interestedIn,
-  //         address: payload.address,
-  //         latitude: payload.latitude,
-  //         longitude: payload.longitude,
-  //         email: payload.email,
-  //         phone: payload.phone,
-  //         password: hashPassword,
-  //         images: payload.images,
-  //         role: UserRoleEnum.USER,
-  //         fcmToken: payload.fcmToken,
-  //       },
-  //       select: {
-  //         id: true,
-  //         email: true,
-  //         name: true,
-  //         role: true,
-  //         status: true,
-  //         fcmToken: true,
-  //         isVerified: true,
-  //         createdAt: true,
-  //         updatedAt: true,
-  //       },
-  //     });
-  //   } else {
-  //     newUser = existingUser;
-  //   }
+    // Send OTP via email (Outside transaction)
+    await sendOTPEmail(newUser.email, otpCode);
 
-  //   const { otpCode, expiry, hexCode } = generateOTP();
-
-  //   // Save OTP to database
-  //   const userData = await saveOrUpdateOTP(
-  //     newUser.email,
-  //     otpCode,
-  //     expiry,
-  //     hexCode,
-  //     prisma
-  //   );
-
-  //   // Send OTP via email (Outside transaction)
-  //   await sendOTPEmail(newUser.email, otpCode);
-
-  //   return {
-  //     id: newUser.id,
-  //     name: newUser.name,
-  //     role: newUser.role,
-  //     isVerified: newUser.isVerified,
-  //     createdAt: newUser.createdAt,
-  //     updatedAt: newUser.updatedAt,
-  //     hexCode: userData.hexCode,
-  //   };
-  // });
+    return {
+      id: newUser.id,
+      name: newUser.name,
+      role: newUser.role,
+      isVerified: newUser.isVerified,
+      createdAt: newUser.createdAt,
+      updatedAt: newUser.updatedAt,
+      hexCode: userData.hexCode,
+    };
+  });
 };
 
 const verifyEmail = async (hexCode: string, otpCode: string) => {
@@ -172,7 +173,10 @@ const loginUserFromDB = async (payload: {
 
   // Check if the user is verified
   if (!userData.isVerified) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "User is not verified");
+    throw new ApiError(
+      httpStatus.UNAUTHORIZED,
+      "Please verify your email before logging in."
+    );
   }
 
   // Check if the password is correct
