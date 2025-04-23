@@ -16,89 +16,93 @@ const registrationNewUser = async (payload: User, file: any, protocol:string , h
 
   // Check if the file is an image
   if (file && file.length > 0) {
-    payload.images = file.map((file: any) => `${protocol}://${host}/${file.path}`); // Set the profilePic field to the image URL
+    payload.images = file.map((file: any) => `${protocol}://${host}/${file.path}`); 
   }
 
+  console.log("file 🗃️", file);
+  console.log("images 🎦", payload.images);
+  
 
-  return await prisma.$transaction(async (prisma) => {
-    // Check if email is already registered and Verified
-    const existingUser = await prisma.user.findUnique({
-      where: { email: payload.email },
-    });
 
-    if (existingUser && existingUser.isVerified) {
-      throw new ApiError(
-        httpStatus.CONFLICT,
-        "This email is already registered"
-      );
-    }
+  // return await prisma.$transaction(async (prisma) => {
+  //   // Check if email is already registered and Verified
+  //   const existingUser = await prisma.user.findUnique({
+  //     where: { email: payload.email },
+  //   });
 
-    // Hash the password
-    const hashPassword = await bcrypt.hash(
-      payload.password,
-      Number(config.bcrypt_salt_rounds)
-    );
+  //   if (existingUser && existingUser.isVerified) {
+  //     throw new ApiError(
+  //       httpStatus.CONFLICT,
+  //       "This email is already registered"
+  //     );
+  //   }
 
-    let newUser;
-    // Create new user if not existing
-    if (!existingUser) {
-      newUser = await prisma.user.create({
-        data: {
-          userName: payload.userName,
-          name: payload.name,
-          dob: payload.dob,
-          gender: payload.gender,
-          interestedIn: payload.interestedIn,
-          address: payload.address,
-          latitude: payload.latitude,
-          longitude: payload.longitude,
-          email: payload.email,
-          phone: payload.phone,
-          password: hashPassword,
-          images: payload.images,
-          role: UserRoleEnum.USER,
-          fcmToken: payload.fcmToken,
-        },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          status: true,
-          fcmToken: true,
-          isVerified: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      });
-    } else {
-      newUser = existingUser;
-    }
+  //   // Hash the password
+  //   const hashPassword = await bcrypt.hash(
+  //     payload.password,
+  //     Number(config.bcrypt_salt_rounds)
+  //   );
 
-    const { otpCode, expiry, hexCode } = generateOTP();
+  //   let newUser;
+  //   // Create new user if not existing
+  //   if (!existingUser) {
+  //     newUser = await prisma.user.create({
+  //       data: {
+  //         userName: payload.userName,
+  //         name: payload.name,
+  //         dob: payload.dob,
+  //         gender: payload.gender,
+  //         interestedIn: payload.interestedIn,
+  //         address: payload.address,
+  //         latitude: payload.latitude,
+  //         longitude: payload.longitude,
+  //         email: payload.email,
+  //         phone: payload.phone,
+  //         password: hashPassword,
+  //         images: payload.images,
+  //         role: UserRoleEnum.USER,
+  //         fcmToken: payload.fcmToken,
+  //       },
+  //       select: {
+  //         id: true,
+  //         email: true,
+  //         name: true,
+  //         role: true,
+  //         status: true,
+  //         fcmToken: true,
+  //         isVerified: true,
+  //         createdAt: true,
+  //         updatedAt: true,
+  //       },
+  //     });
+  //   } else {
+  //     newUser = existingUser;
+  //   }
 
-    // Save OTP to database
-    const userData = await saveOrUpdateOTP(
-      newUser.email,
-      otpCode,
-      expiry,
-      hexCode,
-      prisma
-    );
+  //   const { otpCode, expiry, hexCode } = generateOTP();
 
-    // Send OTP via email (Outside transaction)
-    await sendOTPEmail(newUser.email, otpCode);
+  //   // Save OTP to database
+  //   const userData = await saveOrUpdateOTP(
+  //     newUser.email,
+  //     otpCode,
+  //     expiry,
+  //     hexCode,
+  //     prisma
+  //   );
 
-    return {
-      id: newUser.id,
-      name: newUser.name,
-      role: newUser.role,
-      isVerified: newUser.isVerified,
-      createdAt: newUser.createdAt,
-      updatedAt: newUser.updatedAt,
-      hexCode: userData.hexCode,
-    };
-  });
+  //   // Send OTP via email (Outside transaction)
+  //   await sendOTPEmail(newUser.email, otpCode);
+
+  //   return {
+  //     id: newUser.id,
+  //     name: newUser.name,
+  //     role: newUser.role,
+  //     isVerified: newUser.isVerified,
+  //     createdAt: newUser.createdAt,
+  //     updatedAt: newUser.updatedAt,
+  //     hexCode: userData.hexCode,
+  //   };
+  // });
 };
 
 const verifyEmail = async (hexCode: string, otpCode: string) => {

@@ -21,5 +21,14 @@ export default {
     app_pass: process.env.APP_PASS,
     contact_mail_address: process.env.CONTACT_MAIL_ADDRESS,
   },
+
+  // S3 configuration
+  S3: {
+    accessKeyId: process.env.S3_ACCESS_KEY || "",
+    secretAccessKey: process.env.S3_SECRET_KEY || "",
+    region: process.env.S3_REGION || "nyc3",
+    bucketName: process.env.S3_BUCKET_NAME || "smtech-space",
+    endpoint: process.env.S3_ENDPOINT || "https://nyc3.digitaloceanspaces.com",
+  },
   serverUrl: process.env.SERVER_URL,
 };
