@@ -32,13 +32,28 @@ model User {
   fcmToken      String?
   isVerified    Boolean               @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   // Relationship
 
   @@map("users")
+}
+
+model Feedback {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId           Int?
+  appVersion       String?
+  deviceInfo       String?
+  rating           Int?
+  selectedOpinions String[]
+  otherOpinion     String?
+  comment          String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+ @@map("feedbacks")
 }
 
 model Payment {
