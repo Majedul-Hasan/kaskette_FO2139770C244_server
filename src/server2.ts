@@ -1,21 +1,23 @@
-import { Server } from 'http';
-import app from './app';
-import { WebSocket, WebSocketServer } from 'ws';
-import seedSuperAdmin from './app/DB';
-import config from './app/config';
-import { chatServices } from './app/modules/chat/chat.services';
+import { Server } from "http";
+import { WebSocket, WebSocketServer } from "ws";
+import app from "./app";
+import { chatServices } from "./app/modules/chat/chat.services";
+import config from "./app/config";
+import seedSuperAdmin from "./app/DB";
 
-const port = config.port || 5001;
 
 interface ExtendedWebSocket extends WebSocket {
   roomId?: string;
   userId?: string;
 }
 
+const port = config.port || 5000;
+
 async function main() {
   const server: Server = app.listen(port, () => {
-    console.log('Sever is running on port ', port);
-    seedSuperAdmin();
+    console.log("Server is running on port ", port);
+  });
+  seedSuperAdmin();
 
   const activeUsers: Map<string, boolean> = new Map();
 
@@ -192,29 +194,6 @@ async function main() {
         console.log(`User ${ws.userId} is now inactive`);
       }
     });
-  });
-
-
-  });
-
-
-  const exitHandler = () => {
-    if (server) {
-      server.close(() => {
-        console.info('Server closed!');
-      });
-    }
-    process.exit(1);
-  };
-
-  process.on('uncaughtException', (error) => {
-    console.log(error);
-    exitHandler();
-  });
-
-  process.on('unhandledRejection', (error) => {
-    console.log(error);
-    exitHandler();
   });
 }
 

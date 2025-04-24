@@ -37,9 +37,49 @@ model User {
   deletedAt DateTime?
 
   // Relationship
-  feedbacks Feedback[]
+  feedbacks      Feedback[]
+  message        Message[]      @relation("UserMessages")
+  conversations1 Conversation[] @relation("User1Conversations")
+  conversations2 Conversation[] @relation("User2Conversations")
+  conversation   Conversation[]
 
   @@map("users")
+}
+
+model Conversation {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  user1Id   String    @db.ObjectId
+  user2Id   String    @db.ObjectId
+  messages  Message[] @relation("ConversationMessages")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relationships
+  user1 User @relation("User1Conversations", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2 User @relation("User2Conversations", fields: [user2Id], references: [id], onDelete: Cascade)
+
+  userId String? @db.ObjectId
+  User   User?   @relation(fields: [userId], references: [id])
+
+  @@unique([user1Id, user2Id])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  conversationId String       @db.ObjectId
+  senderId       String       @db.ObjectId
+  receiverId     String       @db.ObjectId
+  content        String?
+  file           String?
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  // Relationships
+  sender         User         @relation("UserMessages", fields: [senderId], references: [id])
+  conversation   Conversation @relation("ConversationMessages", fields: [conversationId], references: [id])
+
+  @@map("messages")
 }
 
 model Feedback {

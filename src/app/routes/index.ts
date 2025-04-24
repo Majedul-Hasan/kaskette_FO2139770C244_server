@@ -3,6 +3,7 @@ import { AuthRouters } from '../modules/auth/auth.routes';
 
 import { UserRouters } from '../modules/user/user.routes';
 import { FeedbackRouters } from '../modules/feedback/feedback.route';
+import { ChatRouters } from '../modules/chat/chat.route';
 
 
 
@@ -20,6 +21,10 @@ const moduleRoutes = [
   {
     path: '/feedback',
     route: FeedbackRouters,
+  },
+  {
+    path: '/chats',
+    route: ChatRouters,
   },
 
 
