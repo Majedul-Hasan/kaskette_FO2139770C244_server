@@ -47,4 +47,10 @@ router.put(
   UserControllers.softDelete
 );
 
+router.delete(
+  '/delete-my-account',
+  auth('USER'),
+  UserControllers.deleteMyAccount
+);
+
 export const UserRouters = router;

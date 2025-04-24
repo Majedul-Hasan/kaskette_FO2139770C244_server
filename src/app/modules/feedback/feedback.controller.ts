@@ -8,7 +8,7 @@ const sendFeedback = catchAsync(async (req, res) => {
 
     const result = await FeedbackServices.sendFeedback(req.user.id ,req.body);
     sendResponse(res, {
-        statusCode: httpStatus.OK,
+        statusCode: httpStatus.CREATED,
         message: 'Feedback sent successfully',
         data: result,
     });

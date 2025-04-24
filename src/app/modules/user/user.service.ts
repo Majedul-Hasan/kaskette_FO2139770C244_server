@@ -234,6 +234,27 @@ const softDelete = async (id: string) => {
 
   return result;
 }
+
+const deleteMyAccount = async (id: string) => {
+  
+  const existingUser = await prisma.user.findUnique({
+    where: { id },
+  });
+  if (!existingUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+  
+  const result = await prisma.user.delete({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      email: true
+    }
+  });
+
+  return result;
+}
 export const UserServices = {
   getAllUsersFromDB,
   getMyProfileFromDB,
@@ -241,5 +262,6 @@ export const UserServices = {
   updateMyProfileIntoDB,
   pauseOrActiveAccountIntoDB,
   findUniqUserName,
-  softDelete
+  softDelete,
+  deleteMyAccount
 };
