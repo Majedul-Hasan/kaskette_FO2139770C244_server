@@ -178,8 +178,6 @@ const loginUserFromDB = async (payload: {
       "Please verify your email before logging in."
     );
   }
-
-  console.log('1111111111111111111111111', payload.password);
   
   // Check if the password is correct
   const isCorrectPassword = await bcrypt.compare(

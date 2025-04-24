@@ -4,6 +4,8 @@ import { WebSocket, WebSocketServer } from 'ws';
 import seedSuperAdmin from './app/DB';
 import config from './app/config';
 import { chatServices } from './app/modules/chat/chat.services';
+import prisma from './app/config/prisma';
+import { notificationServices } from './app/modules/notifications/notification.service';
 
 const port = config.port || 5001;
 
@@ -131,28 +133,28 @@ async function main() {
                 client.userId === receiverId && client.readyState === 1
             );
 
-            // if (!isReceiverActive) {
-            //   const senderProfile = await prisma.user.findUnique({
-            //     where: { id: senderId },
-            //     select: { firstName: true },
-            //   });
+            if (!isReceiverActive) {
+              const senderProfile = await prisma.user.findUnique({
+                where: { id: senderId },
+                select: { name: true },
+              });
 
-            //   const notificationData = {
-            //     title: "New Message Received!",
-            //     body: `${
-            //       senderProfile?.firstName || "Someone"
-            //     } has sent you a new message.`,
-            //   };
+              const notificationData = {
+                title: "New Message Received!",
+                body: `${
+                  senderProfile?.name || "Someone"
+                } has sent you a new message.`,
+              };
 
-            //   try {
-            //     await notificationServices.sendSingleNotification({
-            //       params: { userId: receiverId },
-            //       body: notificationData,
-            //     });
-            //   } catch (error: any) {
-            //     console.error("Failed to send notification:", error.message);
-            //   }
-            // }
+              try {
+                await notificationServices.sendSingleNotification({
+                  params: { userId: receiverId },
+                  body: notificationData,
+                });
+              } catch (error: any) {
+                console.error("Failed to send notification:", error.message);
+              }
+            }
 
             break;
           }

@@ -19,4 +19,10 @@ router.post(
     FeedbackControllers.addSelectFeedbackOpinion
 );
 
+router.get(
+    "/options",
+    auth("SUPER_ADMIN"),
+    FeedbackControllers.getFeedbackOptions
+);
+
 export const FeedbackRouters = router;

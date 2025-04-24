@@ -37,11 +37,13 @@ model User {
   deletedAt DateTime?
 
   // Relationship
-  feedbacks      Feedback[]
-  message        Message[]      @relation("UserMessages")
-  conversations1 Conversation[] @relation("User1Conversations")
-  conversations2 Conversation[] @relation("User2Conversations")
-  conversation   Conversation[]
+  feedbacks            Feedback[]     
+  message              Message[]      @relation("UserMessages")
+  conversations1       Conversation[] @relation("User1Conversations")
+  conversations2       Conversation[] @relation("User2Conversations")
+  notificationsReceive Notification[] @relation("receiver")
+  notificationsSend    Notification[] @relation("sender")
+  Conversation         Conversation[]
 
   @@map("users")
 }
@@ -98,7 +100,7 @@ model Feedback {
 }
 
 model FeedbackOpinions {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
   selectedOpinions String[]
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -133,16 +135,16 @@ model Otp {
 }
 
 model Notification {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId // The instructor who will receive the notification
-  title     String
-  message   String // The message content of the notification
-  body      String
-  isRead    Boolean  @default(false) // Indicates whether the notification has been read
-  createdAt DateTime @default(now()) // Timestamp of when the notification was created 
-
-  isClicked Boolean @default(false) // Indicates whether the notification has been read
-  // User      User    @relation(fields: [userId], references: [id])
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  receiverId String   @db.ObjectId
+  senderId   String?  @db.ObjectId
+  title      String
+  body       String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  receiver   User     @relation(fields: [receiverId], references: [id], name: "receiver")
+  sender     User?    @relation(fields: [senderId], references: [id], name: "sender")
 
   @@map("notifications")
 }
