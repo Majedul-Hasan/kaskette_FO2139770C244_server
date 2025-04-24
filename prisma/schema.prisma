@@ -97,6 +97,15 @@ model Feedback {
   @@map("feedbacks")
 }
 
+model FeedbackOpinions {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  selectedOpinions String[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("feedback_opinions")
+}
+
 model Payment {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   subscription  String        @db.ObjectId // FK

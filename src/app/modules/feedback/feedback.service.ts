@@ -43,7 +43,23 @@ const sendFeedback = async (id: string, payload: Feedback) => {
     return feedback;
 };
 
+const addSelectFeedbackOptions = async (payload: {options: string[] }) => {
+    const feedbackOpinion  = await prisma.feedbackOpinions.create({
+        data: {
+            selectedOpinions: payload.options
+        },
+        select: {
+            id: true,
+            selectedOpinions: true,
+            createdAt: true
+        }
+    })
+
+    return feedbackOpinion
+  }
+
 
 export const FeedbackServices = {
     sendFeedback,
+    addSelectFeedbackOptions
 };

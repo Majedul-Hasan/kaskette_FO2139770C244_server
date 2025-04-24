@@ -15,6 +15,14 @@ const createFeedbackValidation = z.object({
   }),
 });
 
+const addSelectFeedbackOpinion = z.object({
+  body: z.object({
+    options : z.array(z.string().min(1, { message: "Each option must be a non-empty string" }))
+    .max(6, { message: "Maximum 6 options allowed" }).min(5, { message: "At least 6 option is required" })
+  }),
+});
+
 export const FeedbackValidations = {
   createFeedbackValidation,
+  addSelectFeedbackOpinion
 };

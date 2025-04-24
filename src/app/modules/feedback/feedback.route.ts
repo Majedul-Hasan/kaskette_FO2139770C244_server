@@ -12,4 +12,11 @@ router.post(
     FeedbackControllers.sendFeedback
 );
 
+router.post(
+    "/options",
+    auth("SUPER_ADMIN"),
+    validateRequest(FeedbackValidations.addSelectFeedbackOpinion),
+    FeedbackControllers.addSelectFeedbackOpinion
+);
+
 export const FeedbackRouters = router;
