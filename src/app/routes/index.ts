@@ -5,6 +5,7 @@ import { UserRouters } from '../modules/user/user.routes';
 import { FeedbackRouters } from '../modules/feedback/feedback.route';
 import { ChatRouters } from '../modules/chat/chat.route';
 import { NotificationsRouters } from '../modules/notifications/notification.routes';
+import { PaymentRouters } from '../modules/payment/payment.route';
 
 
 
@@ -30,6 +31,10 @@ const moduleRoutes = [
   {
     path: '/notification',
     route: NotificationsRouters,
+  },
+  {
+    path: '/payment',
+    route: PaymentRouters,
   },
 
 

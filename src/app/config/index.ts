@@ -31,4 +31,5 @@ export default {
     endpoint: process.env.S3_ENDPOINT || "https://nyc3.digitaloceanspaces.com",
   },
   serverUrl: process.env.SERVER_URL,
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
 };
