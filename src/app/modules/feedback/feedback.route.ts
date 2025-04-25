@@ -21,7 +21,7 @@ router.post(
 
 router.get(
     "/options",
-    auth("SUPER_ADMIN"),
+    auth("SUPER_ADMIN", "USER"),
     FeedbackControllers.getFeedbackOptions
 );
 

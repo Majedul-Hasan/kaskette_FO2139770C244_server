@@ -35,15 +35,18 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+  // Reveal
+  reveal Int @default(1)
 
   // Relationship
-  feedbacks            Feedback[]     
+  feedbacks            Feedback[]
   message              Message[]      @relation("UserMessages")
   conversations1       Conversation[] @relation("User1Conversations")
   conversations2       Conversation[] @relation("User2Conversations")
   notificationsReceive Notification[] @relation("receiver")
   notificationsSend    Notification[] @relation("sender")
   Conversation         Conversation[]
+  subscription         Subscription[]
 
   @@map("users")
 }
@@ -108,16 +111,47 @@ model FeedbackOpinions {
   @@map("feedback_opinions")
 }
 
+model Subscription {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
+  planId    String    @db.ObjectId
+  plan      Plan      @relation(fields: [planId], references: [id])
+  status    SubStatus @default(ACTIVE)
+  startDate DateTime  @default(now())
+  endDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id])
+  payments  Payment[] @relation("SubscriptionPayments")
+
+  @@map("subscriptions")
+}
+
+model Plan {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  amount    Float
+  type      PlanType @default(LOVES)
+  feature   String[]
+  isDeleted Boolean  @default(false)
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscription Subscription[]
+
+  @@map("planes")
+}
+
 model Payment {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
-  subscription  String        @db.ObjectId // FK
-  user          String
-  amount        Float
-  status        PaymentStatus
-  method        PaymentMethod
-  transactionId String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  user           String
+  amount         Float
+  status         PaymentStatus
+  method         PaymentMethod
+  transactionId  String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  subscriptionId String?       @db.ObjectId
+  Subscription   Subscription? @relation("SubscriptionPayments", fields: [subscriptionId], references: [id])
 
   @@map("payments")
 }
@@ -217,5 +251,21 @@ enum OtpType {
 enum PaymentMethod {
   CREDIT_CARD
   DEBIT_CARD
-  PAYPAL
+}
+
+enum SubStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+enum PlanType {
+  LOVES
+  Lov_Start
+  Lov_Explorer
+  Lov_Connect
+  Lov_Elite
+  Reveal_1
+  Reveal_3
+  Reveal_4
 }
