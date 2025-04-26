@@ -25,7 +25,7 @@ router.get("/:chatroomId/messages", ChatControllers.getMessages);
 router.get("/:id/chatUsers", ChatControllers.getUserChat);
 
 router.delete("/conversation/:id", ChatControllers.deleteConversion);
-router.get("/getMyChat", auth(), ChatControllers.getMyChat);
+router.get("/getMyChat", auth("USER"), ChatControllers.getMyChat);
 
 
 

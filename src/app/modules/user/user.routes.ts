@@ -10,13 +10,13 @@ const router = express.Router();
 
 router.get(
   '/',
-  auth(Role.SUPER_ADMIN, ),
+  auth(Role.SUPER_ADMIN, Role.USER),
   UserControllers.getAllUsers
 );
 
 router.get('/me', auth("USER"), UserControllers.getMyProfile);
 
-router.get('/:id', auth(), UserControllers.getUserDetails);
+router.get('/:id', auth("USER", "SUPER_ADMIN"), UserControllers.getUserDetails);
 
 
 router.put(

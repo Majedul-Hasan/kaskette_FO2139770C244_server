@@ -9,8 +9,8 @@ import pickValidFields from '../../utils/pickValidFields';
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const options = pickValidFields(req.query, ['limit', 'page', 'email']);
-
-  const result = await UserServices.getAllUsersFromDB(options);
+  const id = req.user.id;
+  const result = await UserServices.getAllUsersFromDB(options, id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

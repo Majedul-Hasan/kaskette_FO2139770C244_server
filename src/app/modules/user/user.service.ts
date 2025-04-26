@@ -5,10 +5,10 @@ import { IPaginationOptions } from "../../interface/pagination.type";
 import { paginationHelper } from "../../helpers/paginationHelper";
 import fs from "fs";
 import path from "path";
-import { User, UserStatusEnum } from "@prisma/client";
+import { User, UserRoleEnum, UserStatusEnum } from "@prisma/client";
 
 const getAllUsersFromDB = async (
-  options: IPaginationOptions & { email?: string }
+  options: IPaginationOptions & { email?: string }, userId: string
 ) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
 
@@ -26,8 +26,11 @@ const getAllUsersFromDB = async (
       skip,
       take: limit,
       where: {
+        id: {
+          notIn: [userId], // Corrected: 'notIn' is used for array values
+        },
         role: {
-          not: "SUPER_ADMIN",
+          not: UserRoleEnum.SUPER_ADMIN,
         },
         ...emailFilter,
       },
@@ -40,6 +43,7 @@ const getAllUsersFromDB = async (
         name: true,
         role: true,
         email: true,
+        images: true,
         status: true,
         createdAt: true,
         updatedAt: true,
@@ -47,8 +51,11 @@ const getAllUsersFromDB = async (
     }),
     prisma.user.count({
       where: {
+        id: {
+          notIn: [userId],
+        },
         role: {
-          not: "SUPER_ADMIN",
+          not: UserRoleEnum.SUPER_ADMIN,
         },
         ...emailFilter,
       },
@@ -157,11 +164,12 @@ const updateMyProfileIntoDB = async (
     select: {
       id: true,
       name: true,
-      role: true,
+      bio: true,
+      language: true,
+      dob: true,
       email: true,
       images: true,
-      createdAt: true,
-      updatedAt: true,
+      profession: true,
     },
   });
 
@@ -172,6 +180,14 @@ const pauseOrActiveAccountIntoDB = async (
   id: string,
   payload: { status: Partial<UserStatusEnum> }
 ) => {
+
+  if (payload.status === UserStatusEnum.blocked) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You cannot change the status to blocked"
+    );
+  }
+
   const result = await prisma.user.update({
     where: {
       id: id,
@@ -217,11 +233,11 @@ const softDelete = async (id: string) => {
   // Soft delete the user by setting the deletedAt field to the current date
   const result = await prisma.user.update({
     where: { id },
-    data: { 
-      isDelete: true, 
+    data: {
+      isDelete: true,
       status: UserStatusEnum.deactivated,
-      deletedAt: new Date(), 
-     },
+      deletedAt: new Date(),
+    },
     select: {
       id: true,
       email: true,
@@ -230,32 +246,30 @@ const softDelete = async (id: string) => {
       deletedAt: true,
       isDelete: true,
     },
-
   });
 
   return result;
-}
+};
 
 const deleteMyAccount = async (id: string) => {
-  
   const existingUser = await prisma.user.findUnique({
     where: { id },
   });
   if (!existingUser) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
-  
+
   const result = await prisma.user.delete({
     where: { id },
     select: {
       id: true,
       name: true,
-      email: true
-    }
+      email: true,
+    },
   });
 
   return result;
-}
+};
 export const UserServices = {
   getAllUsersFromDB,
   getMyProfileFromDB,
@@ -264,5 +278,62 @@ export const UserServices = {
   pauseOrActiveAccountIntoDB,
   findUniqUserName,
   softDelete,
-  deleteMyAccount
+  deleteMyAccount,
 };
+
+const SubscriptionFeatured = [
+  {
+    name: "LOVES",
+    price: 0,
+    duration: 0,
+    features: ["Unlimited messages", "Unlimited likes"],
+  },
+  {
+    name: "Lov_Starter",
+    price: 0,
+    duration: 0,
+    features: ["Unlimited messages", "Unlimited likes"],
+  },
+  {
+    name: "Lov_Start",
+    price: 0,
+    duration: 0,
+    features: ["Unlimited messages", "Unlimited likes"],
+  },
+  {
+    name: "Lov_Explorer",
+    price: 0,
+    duration: 0,
+    features: ["Unlimited messages", "Unlimited likes"],
+  },
+  {
+    name: "Lov_Connect",
+    price: 0,
+    duration: 0,
+    features: ["Unlimited messages", "Unlimited likes"],
+  },
+  {
+    name: "Lov_Elite",
+    price: 0,
+    duration: 0,
+    features: ["Unlimited messages", "Unlimited likes"],
+  },
+  {
+    name: "Reveal_1",
+    price: 0,
+    duration: 0,
+    features: ["Unlimited messages", "Unlimited likes"],
+  },
+  {
+    name: "Reveal_3",
+    price: 0,
+    duration: 0,
+    features: ["Unlimited messages", "Unlimited likes"],
+  },
+  {
+    name: "Reveal_4",
+    price: 0,
+    duration: 0,
+    features: ["Unlimited messages", "Unlimited likes"],
+  },
+];

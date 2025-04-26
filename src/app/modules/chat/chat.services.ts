@@ -206,7 +206,7 @@ const getMyChat = async (userId: string) => {
       },
     },
   });
-
+  
   const chatList = await Promise.all(
     result.map(async (conversation) => {
       const lastMessage = conversation.messages[0];
