@@ -5,13 +5,10 @@ import { AuthServices } from "./auth.service";
 
 const registrationNewUser = catchAsync(async (req, res) => {
   const file = req.files as any; //as Express.Multer.File[];
-  const host = req.header("host") || "";
 
   const result = await AuthServices.registrationNewUser(
     req.body.bodyData,
     file,
-    req.protocol,
-    host
   );
   sendResponse(res, {
     statusCode: httpStatus.CREATED,

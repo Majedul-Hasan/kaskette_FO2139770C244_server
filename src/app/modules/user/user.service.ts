@@ -211,8 +211,11 @@ const findUniqUserName = async (userName: string) => {
   const existingUser = await prisma.user.findUnique({
     where: { userName },
   });
+  // if (!existingUser?.emailVerified && ) {
+    
+  // }
   // If the username exists, throw an error
-  if (existingUser) {
+  if (existingUser && existingUser.emailVerified && existingUser.emailVerified) {
     throw new ApiError(httpStatus.CONFLICT, "Username already exists");
   }
   // If the username is unique, return a success message

@@ -72,6 +72,8 @@ async function main() {
                 user1Id,
                 user2Id
               );
+              console.log("conversationWithMessages 😎😎", conversationWithMessages);
+              
             ws.send(
               JSON.stringify({
                 type: "loadMessages",

@@ -61,7 +61,7 @@ async function main() {
               user2Id
             );
             ws.roomId = conversation.id;
-
+            
             const unreadCount = await chatServices.countUnreadMessages(
               user1Id,
               ws.roomId
@@ -72,6 +72,7 @@ async function main() {
                 user1Id,
                 user2Id
               );
+              console.log("conversationWithMessages 😎😎", conversationWithMessages);
             ws.send(
               JSON.stringify({
                 type: "loadMessages",

@@ -1,16 +1,17 @@
 import crypto from "crypto";
 import sentEmailUtility from "../../utils/sentEmailUtility";
 import { emailText } from "../../utils/emailTemplate";
+import prisma from "../../config/prisma";
 
 // Function to generate OTP and expiry for a user
-export const generateOTP = () => {
+export const generateOTP = (minute: number) => {
   const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-  const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+  const expiry = new Date(Date.now() + minute * 60 * 1000); // 10 minutes expiry
   const hexCode = crypto.randomBytes(16).toString("hex");
   return { otpCode, expiry, hexCode };
 };
 
-export const saveOrUpdateOTP = async (email: string, otpCode: string, expiry: Date, identifier: string, prisma: any) => {
+export const saveOrUpdateOTP = async (email: string, otpCode: string, expiry: Date, identifier: string) => {
     return await prisma.otp.upsert({
       where: { email },
       update: { otp: otpCode, expiry, hexCode: identifier },

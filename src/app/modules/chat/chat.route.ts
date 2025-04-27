@@ -13,7 +13,6 @@ router.get("/conversation", ChatControllers.getConversationByUserId);
 
 router.get(
   "/conversation/:id1/:id2",
-  auth("USER"),
   ChatControllers.getSingleMassageConversation
 );
 
@@ -26,7 +25,7 @@ router.get("/:chatroomId/messages", ChatControllers.getMessages);
 router.get("/:id/chatUsers", ChatControllers.getUserChat);
 
 router.delete("/conversation/:id", ChatControllers.deleteConversion);
-router.get("/getMyChat", auth("USER"), ChatControllers.getMyChat);
+router.get("/getMyChat", auth(), ChatControllers.getMyChat);
 
 
 

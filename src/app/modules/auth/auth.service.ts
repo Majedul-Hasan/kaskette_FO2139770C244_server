@@ -2,23 +2,17 @@ import * as bcrypt from "bcrypt";
 import httpStatus from "http-status";
 import { Secret } from "jsonwebtoken";
 import config from "../../config";
-// import { generateResetPasswordToken, generateToken } from '../../helpers/generateToken';
 import prisma from "../../config/prisma";
 import crypto from "crypto";
 import sentEmailUtility from "../../utils/sentEmailUtility";
 import { emailText } from "../../utils/emailTemplate";
 import { User, UserStatusEnum, UserRoleEnum } from "@prisma/client";
 import { jwtHelpers } from "../../helpers/jwtHelpers";
-import { generateOTP, saveOrUpdateOTP, sendOTPEmail } from "./auth.utils";
 import ApiError from "../../errors/ApiError";
 import { S3Uploader } from "../../lib/S3Uploader";
+import OTPGenerationSavingAndSendingEmail from "../../helpers/auth";
 
-const registrationNewUser = async (
-  payload: User,
-  file: any,
-  protocol: string,
-  host: string
-) => {
+const registrationNewUser = async (payload: User, file: any) => {
   // Check if the file is an image
   if (file && file.length > 0) {
     // Upload multiple files to S3
@@ -84,19 +78,7 @@ const registrationNewUser = async (
       newUser = existingUser;
     }
 
-    const { otpCode, expiry, hexCode } = generateOTP();
-
-    // Save OTP to database
-    const userData = await saveOrUpdateOTP(
-      newUser.email,
-      otpCode,
-      expiry,
-      hexCode,
-      prisma
-    );
-
-    // Send OTP via email (Outside transaction)
-    await sendOTPEmail(newUser.email, otpCode);
+    const otp = await OTPGenerationSavingAndSendingEmail(newUser.email);
 
     return {
       id: newUser.id,
@@ -105,7 +87,7 @@ const registrationNewUser = async (
       isVerified: newUser.isVerified,
       createdAt: newUser.createdAt,
       updatedAt: newUser.updatedAt,
-      hexCode: userData.hexCode,
+      hexCode: otp.hexCode,
     };
   });
 };
