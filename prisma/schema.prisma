@@ -22,7 +22,7 @@ model User {
   language      String?
   profession    String?
   role          UserRoleEnum          @default(USER)
-  password      String
+  password      String?
   status        UserStatusEnum        @default(in_progress)
   email         String                @unique
   emailVerified Boolean?              @default(false)

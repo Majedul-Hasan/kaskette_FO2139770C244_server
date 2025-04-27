@@ -2,8 +2,6 @@ import httpStatus from "http-status";
 import ApiError from "../../errors/ApiError";
 import prisma from "../../config/prisma";
 
-
-
 const createConversationIntoDB = async (user1Id: string, user2Id: string) => {
   const existingConversation = await prisma.conversation.findFirst({
     where: {
@@ -26,8 +24,6 @@ const createConversationIntoDB = async (user1Id: string, user2Id: string) => {
   }
 
   ///only customer and admin can create a conversation
-
-  
 
   const result = await prisma.conversation.create({
     data: {
@@ -58,23 +54,38 @@ const getConversationsByUserIdIntoDB = async (userId: string) => {
 // Get messages for a specific conversation between two users
 const getMessagesByConversationIntoDB = async (
   user1Id: string,
-  user2Id: string
+  user2Id: string,
 ) => {
-  const conversation = await prisma.conversation.findFirst({
+
+  const conversation = await prisma.message.findFirst({
     where: {
       OR: [
-        { user1Id: user1Id, user2Id: user2Id },
-        { user1Id: user2Id, user2Id: user1Id },
+        { senderId: user1Id, receiverId: user2Id },
+        { senderId: user2Id, receiverId: user1Id },
       ],
-    },
-    include: {
-      messages: {
-        orderBy: { createdAt: "asc" },
-      },
     },
   });
 
-  return conversation || [];
+  const result = conversation
+    ? await prisma.message.findMany({
+        where: {
+          conversationId: conversation.conversationId,
+        },
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          senderId: true,
+          receiverId: true,
+          conversationId: true,
+          file: true,
+          
+          }
+      })
+    : [];
+
+  return result || []; // Return an empty array if no conversation is found
 };
 
 // Create a message in a specific conversation
@@ -206,7 +217,7 @@ const getMyChat = async (userId: string) => {
       },
     },
   });
-  
+
   const chatList = await Promise.all(
     result.map(async (conversation) => {
       const lastMessage = conversation.messages[0];

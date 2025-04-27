@@ -8,6 +8,8 @@ import { fileUploader } from "../../middlewares/fileUploader";
 import parseBodyData from "../../middlewares/parseBodyData";
 const router = express.Router();
 
+router.post("/social-login", AuthControllers.socialLogin);
+
 router.post(
   "/register",
   fileUploader.uploadMultiple,
@@ -45,7 +47,6 @@ router.post(
   auth("USER"),
   AuthControllers.changePassword
 );
-
 
 export const AuthRouters = router;
 

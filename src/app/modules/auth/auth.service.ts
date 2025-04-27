@@ -13,18 +13,22 @@ import { generateOTP, saveOrUpdateOTP, sendOTPEmail } from "./auth.utils";
 import ApiError from "../../errors/ApiError";
 import { S3Uploader } from "../../lib/S3Uploader";
 
-const registrationNewUser = async (payload: User, file: any, protocol:string , host: string) => {
-
+const registrationNewUser = async (
+  payload: User,
+  file: any,
+  protocol: string,
+  host: string
+) => {
   // Check if the file is an image
   if (file && file.length > 0) {
-    // Upload multiple files to S3 
-    const uploadPromises = file.map((file: any) => S3Uploader.uploadToS3(file, "user"));
+    // Upload multiple files to S3
+    const uploadPromises = file.map((file: any) =>
+      S3Uploader.uploadToS3(file, "user")
+    );
     const uploadResults = await Promise.all(uploadPromises);
     payload.images = uploadResults.map((result) => result.Location); // Update the payload with S3 URLs
-
   }
-  // console.log("file 🗃️", file);
-  // console.log("images 🎦", payload.images)
+
   return await prisma.$transaction(async (prisma) => {
     // Check if email is already registered and Verified
     const existingUser = await prisma.user.findUnique({
@@ -40,7 +44,7 @@ const registrationNewUser = async (payload: User, file: any, protocol:string , h
 
     // Hash the password
     const hashPassword = await bcrypt.hash(
-      payload.password,
+      payload.password!,
       Number(config.bcrypt_salt_rounds)
     );
 
@@ -127,7 +131,11 @@ const verifyEmail = async (hexCode: string, otpCode: string) => {
     // Update user verification status
     const updatedUser = await prisma.user.update({
       where: { email: otpRecord.email },
-      data: { isVerified: true, status:UserStatusEnum.in_progress, emailVerified: true},
+      data: {
+        isVerified: true,
+        status: UserStatusEnum.in_progress,
+        emailVerified: true,
+      },
       select: {
         id: true,
         email: true,
@@ -162,7 +170,7 @@ const verifyEmail = async (hexCode: string, otpCode: string) => {
 const loginUserFromDB = async (payload: {
   email: string;
   password: string;
-  fcmToken: string;
+  fcmToken?: string;
 }) => {
   // Find the user by email
   const userData = await prisma.user.findUniqueOrThrow({
@@ -178,14 +186,12 @@ const loginUserFromDB = async (payload: {
       "Please verify your email before logging in."
     );
   }
-  
+
   // Check if the password is correct
   const isCorrectPassword = await bcrypt.compare(
     payload.password,
     userData.password as string
   );
-
-
 
   if (!isCorrectPassword) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Password incorrect");
@@ -427,6 +433,74 @@ const changePassword = async (payload: {
   };
 };
 
+const socialLogin = async (payload: any) => {
+  const user = await prisma.user.findFirst({
+    where: {
+      email: payload.email,
+    },
+  });
+
+  // If user exists then login the user
+  // Update the FCM token if provided
+  if (user) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { fcmToken: payload.fcmToken || null },
+    });
+    // Generate an access token
+    const accessToken = jwtHelpers.generateToken(
+      {
+        id: user.id,
+        email: user.email as string,
+        role: user.role,
+      },
+      config.jwt.access_secret as Secret,
+      config.jwt.access_expires_in
+    );
+
+    return {
+      id: user.id,
+      name: user.name,
+      userName: user.userName,
+      email: user.email,
+      role: user.role,
+      accessToken: accessToken,
+    };
+  }
+
+  // If user doesn't exist, create a new user
+  const newUser = await prisma.user.create({
+    data: {
+      email: payload.email,
+      name: payload.name,
+      userName: payload.userName,
+      images: payload.images,
+      fcmToken: payload.fcmToken || null,
+      isVerified: true,
+      emailVerified: true,
+      status: UserStatusEnum.in_progress,
+    },
+  });
+  // Generate an access token
+  const accessToken = jwtHelpers.generateToken(
+    {
+      id: newUser.id,
+      email: newUser.email as string,
+      role: newUser.role,
+    },
+    config.jwt.access_secret as Secret,
+    config.jwt.access_expires_in
+  );
+  return {
+    id: newUser.id,
+    name: newUser.name,
+    userName: newUser.userName,
+    email: newUser.email,
+    role: newUser.role,
+    accessToken: accessToken,
+  };
+};
+
 export const AuthServices = {
   loginUserFromDB,
   registrationNewUser,
@@ -435,4 +509,5 @@ export const AuthServices = {
   verifyOtpCode,
   resetPassword,
   changePassword,
+  socialLogin,
 };

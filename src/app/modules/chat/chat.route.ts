@@ -13,6 +13,7 @@ router.get("/conversation", ChatControllers.getConversationByUserId);
 
 router.get(
   "/conversation/:id1/:id2",
+  auth("USER"),
   ChatControllers.getSingleMassageConversation
 );
 

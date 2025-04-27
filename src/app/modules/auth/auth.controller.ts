@@ -1,17 +1,21 @@
-import httpStatus from 'http-status';
-import catchAsync from '../../helpers/catchAsync';
-import sendResponse from '../../utils/sendResponse';
-import { AuthServices } from './auth.service';
-
+import httpStatus from "http-status";
+import catchAsync from "../../helpers/catchAsync";
+import sendResponse from "../../utils/sendResponse";
+import { AuthServices } from "./auth.service";
 
 const registrationNewUser = catchAsync(async (req, res) => {
-  const file = req.files as any //as Express.Multer.File[];
-  const host = req.header('host') || '';
+  const file = req.files as any; //as Express.Multer.File[];
+  const host = req.header("host") || "";
 
-  const result = await AuthServices.registrationNewUser(req.body.bodyData, file, req.protocol, host);
+  const result = await AuthServices.registrationNewUser(
+    req.body.bodyData,
+    file,
+    req.protocol,
+    host
+  );
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
-    message: 'verify your otp code',
+    message: "verify your otp code",
     data: result,
   });
 });
@@ -20,18 +24,18 @@ const loginUser = catchAsync(async (req, res) => {
   const result = await AuthServices.loginUserFromDB(req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
-    message: 'User logged in successfully',
+    message: "User logged in successfully",
     data: result,
   });
 });
 
 const verifiedEmail = catchAsync(async (req, res) => {
-  const {hexCode, otpCode} = req.body
-  
+  const { hexCode, otpCode } = req.body;
+
   const result = await AuthServices.verifyEmail(hexCode, otpCode);
   sendResponse(res, {
     statusCode: httpStatus.OK,
-    message: 'OTP verified successfully',
+    message: "OTP verified successfully",
     data: result,
   });
 });
@@ -40,18 +44,18 @@ const verifyOtpCode = catchAsync(async (req, res) => {
   const result = await AuthServices.verifyOtpCode(req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
-    message: 'OTP verified successfully',
+    message: "OTP verified successfully",
     data: result,
   });
 });
 
 const resetPassword = catchAsync(async (req, res) => {
-const userId = req.user.id
+  const userId = req.user.id;
   const password: string = req.body.password;
-  const result = await AuthServices.resetPassword(userId,{  password });  
+  const result = await AuthServices.resetPassword(userId, { password });
   sendResponse(res, {
     statusCode: httpStatus.OK,
-    message: 'password reset successfully',
+    message: "password reset successfully",
     data: result,
   });
 });
@@ -67,7 +71,7 @@ const changePassword = catchAsync(async (req, res) => {
   });
   sendResponse(res, {
     statusCode: httpStatus.OK,
-    message: 'password changed successfully',
+    message: "password changed successfully",
     data: result,
   });
 });
@@ -76,7 +80,16 @@ const forgotPassword = catchAsync(async (req, res) => {
   const result = await AuthServices.forgotPassword(req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
-    message: 'otp send successfully',
+    message: "otp send successfully",
+    data: result,
+  });
+});
+
+const socialLogin = catchAsync(async (req, res) => {
+  const result = await AuthServices.socialLogin(req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    message: "Login successfully",
     data: result,
   });
 });
@@ -89,4 +102,5 @@ export const AuthControllers = {
   resetPassword,
   changePassword,
   verifiedEmail,
+  socialLogin,
 };
