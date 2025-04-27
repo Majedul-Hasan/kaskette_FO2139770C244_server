@@ -18,9 +18,9 @@ async function main() {
   const server: Server = app.listen(port, () => {
     console.log('Sever is running on port ', port);
     seedSuperAdmin();
-
-  const activeUsers: Map<string, boolean> = new Map();
-
+    
+    const activeUsers: Map<string, boolean> = new Map();
+    
   // Initialize WebSocket server
   const wss = new WebSocketServer({ server });
 
@@ -50,7 +50,7 @@ async function main() {
               return;
             }
 
-            ws.userId = user1Id;
+            ws.userId = user1Id;            
             activeUsers.set(user1Id, true);
 
             console.log(`User ${user1Id} is now active`);
@@ -61,7 +61,7 @@ async function main() {
               user2Id
             );
             ws.roomId = conversation.id;
-            
+
             const unreadCount = await chatServices.countUnreadMessages(
               user1Id,
               ws.roomId
@@ -72,7 +72,6 @@ async function main() {
                 user1Id,
                 user2Id
               );
-              console.log("conversationWithMessages 😎😎", conversationWithMessages);
             ws.send(
               JSON.stringify({
                 type: "loadMessages",

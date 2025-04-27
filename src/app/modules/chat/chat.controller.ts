@@ -1,10 +1,11 @@
-import { Request, Response } from "express";
-import httpStatus from "http-status";
+import { Request, Response } from 'express';
+import httpStatus from 'http-status';
 
-import { chatServices } from "./chat.services";
+import { chatServices } from './chat.services';
 
-import catchAsync from "../../helpers/catchAsync";
-import sendResponse from "../../utils/sendResponse";
+import catchAsync from '../../helpers/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+
 
 const createConversation = catchAsync(async (req: Request, res: Response) => {
   const { user1Id, user2Id } = req.body;
@@ -17,14 +18,12 @@ const createConversation = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// GET /conversation?user1Id=<user1>&user2Id=<user2>
 const getConversationByUserId = catchAsync(
   async (req: Request, res: Response) => {
     const { user1Id, user2Id } = req.query;
-
     const result = await chatServices.getMessagesByConversationIntoDB(
       user1Id as string,
-      user2Id as string,
+      user2Id as string
     );
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -39,11 +38,8 @@ const getConversationByUserId = catchAsync(
 const getSingleMassageConversation = catchAsync(
   async (req: Request, res: Response) => {
     const id1 = req.params.id1;
-    const id2 = req.params.id2;
-    const result = await chatServices.getMessagesByConversationIntoDB(
-      id1,
-      id2,
-    );
+    const id2 = req.params.id2;    
+    const result = await chatServices.getMessagesByConversationIntoDB(id1, id2);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -76,7 +72,7 @@ const getMessages = catchAsync(async (req: Request, res: Response) => {
   const { user1Id, user2Id } = req.query;
   const result = await chatServices.getMessagesByConversationIntoDB(
     user1Id as string,
-    user2Id as string,
+    user2Id as string
   );
   sendResponse(res, {
     statusCode: httpStatus.OK,

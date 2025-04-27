@@ -1,6 +1,9 @@
+import { PrismaClient } from "@prisma/client";
 import httpStatus from "http-status";
 import ApiError from "../../errors/ApiError";
-import prisma from "../../config/prisma";
+
+
+const prisma = new PrismaClient();
 
 const createConversationIntoDB = async (user1Id: string, user2Id: string) => {
   const existingConversation = await prisma.conversation.findFirst({
@@ -23,7 +26,6 @@ const createConversationIntoDB = async (user1Id: string, user2Id: string) => {
     );
   }
 
-  ///only customer and admin can create a conversation
 
   const result = await prisma.conversation.create({
     data: {
@@ -35,6 +37,8 @@ const createConversationIntoDB = async (user1Id: string, user2Id: string) => {
 };
 
 const getConversationsByUserIdIntoDB = async (userId: string) => {
+  console.log("UserId🤢🤢", userId);
+  
   const result = await prisma.conversation.findMany({
     where: {
       OR: [{ user1Id: userId }, { user2Id: userId }],
@@ -48,50 +52,18 @@ const getConversationsByUserIdIntoDB = async (userId: string) => {
       },
     },
   });
+  console.log("Re", result)
   return result;
 };
 
 // Get messages for a specific conversation between two users
-const getMessagesByConversationIntoDB2 = async (
-  user1Id: string,
-  user2Id: string,
-) => {
-
-  const conversation = await prisma.message.findFirst({
-    where: {
-      OR: [
-        { senderId: user1Id, receiverId: user2Id },
-        { senderId: user2Id, receiverId: user1Id },
-      ],
-    },
-  });
-
-  const result = conversation
-    ? await prisma.message.findMany({
-        where: {
-          conversationId: conversation.conversationId,
-        },
-        orderBy: { createdAt: "desc" },
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-          senderId: true,
-          receiverId: true,
-          conversationId: true,
-          file: true,
-          
-          }
-      })
-    : [];
-
-  return result || []; // Return an empty array if no conversation is found
-};
-
 const getMessagesByConversationIntoDB = async (
   user1Id: string,
   user2Id: string
 ) => {
+  console.log("User1Id 🤢", user1Id);
+  console.log("User2Id 🤢", user2Id);
+  
   const conversation = await prisma.conversation.findFirst({
     where: {
       OR: [
@@ -105,7 +77,6 @@ const getMessagesByConversationIntoDB = async (
       },
     },
   });
-
   return conversation || [];
 };
 
@@ -138,7 +109,6 @@ const createMessageIntoDB = async (
 
   return result;
 };
-
 const getChatUsersForUser = async (userId: string) => {
   const conversations = await prisma.conversation.findMany({
     where: {
@@ -239,9 +209,6 @@ const getMyChat = async (userId: string) => {
     },
   });
 
-  console.log("rerrerererer",result);
-  
-
   const chatList = await Promise.all(
     result.map(async (conversation) => {
       const lastMessage = conversation.messages[0];
@@ -258,8 +225,6 @@ const getMyChat = async (userId: string) => {
           email: true,
         },
       });
-      console.log("targetUserProfile", targetUserProfile);
-      
 
       return {
         conversationId: conversation.id,
@@ -282,7 +247,6 @@ const existingUser = async (user1Id: string, user2Id: string) => {
 
   return users.length === 2;
 };
-
 export const chatServices = {
   createConversationIntoDB,
   getConversationsByUserIdIntoDB,

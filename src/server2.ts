@@ -35,6 +35,7 @@ async function main() {
         switch (parsedData.type) {
           case "joinRoom": {
             const { user1Id, user2Id } = parsedData;
+            
 
             const existingUser = await chatServices.existingUser(
               user1Id,

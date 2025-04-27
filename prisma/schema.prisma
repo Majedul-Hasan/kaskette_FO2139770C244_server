@@ -51,6 +51,7 @@ model User {
   @@map("users")
 }
 
+
 model Conversation {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   user1Id   String    @db.ObjectId
