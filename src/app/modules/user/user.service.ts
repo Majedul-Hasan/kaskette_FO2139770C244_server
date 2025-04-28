@@ -131,10 +131,21 @@ const updateMyProfileIntoDB = async (
   const existingUser = await prisma.user.findUnique({
     where: { id: userId },
   });
+  
   if (!existingUser) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
+
+  // Check if the file is an array and has at least one file
+  if (!Array.isArray(file) || file.length === 0) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Please upload at least 2 images"
+    );
+  }
+
   let images = [...existingUser.images];
+
   if (file && file.length > 0) {
     // Upload multiple files to S3
     const uploadPromises = file.map((file: any) =>
@@ -151,9 +162,15 @@ const updateMyProfileIntoDB = async (
     }
 
     if (!(images.length >= 2)) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Please upload at least 2 images");
-    }else if (images.length > 8) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Maximum 8 images are allowed");
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Please upload at least 2 images"
+      );
+    } else if (images.length > 8) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Maximum 8 images are allowed"
+      );
     }
 
     // Prepare the updated data object

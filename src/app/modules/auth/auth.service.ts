@@ -10,10 +10,14 @@ import { User, UserStatusEnum, UserRoleEnum } from "@prisma/client";
 import { jwtHelpers } from "../../helpers/jwtHelpers";
 import ApiError from "../../errors/ApiError";
 import { S3Uploader } from "../../lib/S3Uploader";
-import OTPGenerationSavingAndSendingEmail from "../../helpers/auth";
+import { hashPasswordGenerator, OTPGenerationSavingAndSendingEmail } from "../../helpers/auth";
+// import OTPGenerationSavingAndSendingEmail from "../../helpers/auth";
 
 const registrationNewUser = async (payload: User, file: any) => {
-
+  // Check if the file is an array and has at least one file
+  if (!Array.isArray(file) || file.length === 0) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Please upload at least 2 images");
+  }
 
   // Check if the file is an image
   if (file && file.length > 0) {
@@ -44,10 +48,11 @@ const registrationNewUser = async (payload: User, file: any) => {
       throw new ApiError(httpStatus.BAD_REQUEST, "Maximum 8 images are allowed");
     }
     // Hash the password
-    const hashPassword = await bcrypt.hash(
-      payload.password!,
-      Number(config.bcrypt_salt_rounds)
-    );
+    // const hashPassword = await bcrypt.hash(
+    //   payload.password!,
+    //   Number(config.bcrypt_salt_rounds)
+    // );
+    const hashPassword = await hashPasswordGenerator(payload.password!)
 
     let newUser;
     // Create new user if not existing

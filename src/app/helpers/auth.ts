@@ -1,7 +1,14 @@
 import crypto from "crypto";
 import { sendOTPEmail } from "../modules/auth/auth.utils";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
+
+export const hashPasswordGenerator = async (password: string): Promise<string> => {
+  const saltRounds = 12;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  return hashedPassword;
+};
 
 // Function to generate OTP and expiry for a user
 const generateOTP = (minute: number) => {
@@ -12,17 +19,20 @@ const generateOTP = (minute: number) => {
 };
 
 // Create a new OTP or update the existing one in the database
-const saveOrUpdateOTP = async (email: string, otpCode: string, expiry: Date, identifier: string) => {
-    return await prisma.otp.upsert({
-      where: { email },
-      update: { otp: otpCode, expiry, hexCode: identifier },
-      create: { email, otp: otpCode, expiry, hexCode: identifier },
-    });
-  };
+const saveOrUpdateOTP = async (
+  email: string,
+  otpCode: string,
+  expiry: Date,
+  identifier: string
+) => {
+  return await prisma.otp.upsert({
+    where: { email },
+    update: { otp: otpCode, expiry, hexCode: identifier },
+    create: { email, otp: otpCode, expiry, hexCode: identifier },
+  });
+};
 
-
-
-const OTPGenerationSavingAndSendingEmail = async (
+export const OTPGenerationSavingAndSendingEmail = async (
   email: string,
   minutes?: number
 ): Promise<{ hexCode: string }> => {
@@ -31,5 +41,3 @@ const OTPGenerationSavingAndSendingEmail = async (
   await sendOTPEmail(email, otpCode);
   return { hexCode };
 };
-
-export default OTPGenerationSavingAndSendingEmail;
