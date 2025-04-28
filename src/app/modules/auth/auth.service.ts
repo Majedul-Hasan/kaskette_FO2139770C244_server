@@ -13,9 +13,8 @@ import { S3Uploader } from "../../lib/S3Uploader";
 import OTPGenerationSavingAndSendingEmail from "../../helpers/auth";
 
 const registrationNewUser = async (payload: User, file: any) => {
-  if (file && !(file.length >= 2)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Please upload an image file");
-  }
+
+
   // Check if the file is an image
   if (file && file.length > 0) {
     // Upload multiple files to S3
@@ -39,6 +38,11 @@ const registrationNewUser = async (payload: User, file: any) => {
       );
     }
 
+    if (!(payload.images.length >= 2)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Please upload at least 2 images");
+    }else if (payload.images.length > 8) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Maximum 8 images are allowed");
+    }
     // Hash the password
     const hashPassword = await bcrypt.hash(
       payload.password!,

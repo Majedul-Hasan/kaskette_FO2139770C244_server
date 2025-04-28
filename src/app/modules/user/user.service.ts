@@ -150,6 +150,12 @@ const updateMyProfileIntoDB = async (
       payload.images = images; // Update the payload with S3 URLs
     }
 
+    if (!(images.length >= 2)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Please upload at least 2 images");
+    }else if (images.length > 8) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Maximum 8 images are allowed");
+    }
+
     // Prepare the updated data object
     const updatedData = {
       ...payload,

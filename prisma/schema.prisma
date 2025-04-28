@@ -17,6 +17,7 @@ model User {
   dob           DateTime?
   latitude      Float?
   longitude     Float?
+  radius        Float?
   address       String?
   bio           String?
   language      String?
