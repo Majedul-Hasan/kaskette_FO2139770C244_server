@@ -13,6 +13,9 @@ import { S3Uploader } from "../../lib/S3Uploader";
 import OTPGenerationSavingAndSendingEmail from "../../helpers/auth";
 
 const registrationNewUser = async (payload: User, file: any) => {
+  if (file && !(file.length >= 2)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Please upload an image file");
+  }
   // Check if the file is an image
   if (file && file.length > 0) {
     // Upload multiple files to S3
@@ -67,6 +70,7 @@ const registrationNewUser = async (payload: User, file: any) => {
           email: true,
           name: true,
           role: true,
+          images: true,
           status: true,
           fcmToken: true,
           isVerified: true,
@@ -75,7 +79,25 @@ const registrationNewUser = async (payload: User, file: any) => {
         },
       });
     } else {
-      newUser = existingUser;
+      newUser = await prisma.user.update({
+        where: { email: payload.email },
+        data: {
+          userName: payload.userName,
+          name: payload.name,
+          dob: payload.dob,
+          gender: payload.gender,
+          interestedIn: payload.interestedIn,
+          address: payload.address,
+          latitude: payload.latitude,
+          longitude: payload.longitude,
+          email: payload.email,
+          phone: payload.phone,
+          password: hashPassword,
+          images: payload.images,
+          role: UserRoleEnum.USER,
+          fcmToken: payload.fcmToken,
+        },
+      });
     }
 
     const otp = await OTPGenerationSavingAndSendingEmail(newUser.email);
@@ -84,6 +106,7 @@ const registrationNewUser = async (payload: User, file: any) => {
       id: newUser.id,
       name: newUser.name,
       role: newUser.role,
+      images: newUser.images,
       isVerified: newUser.isVerified,
       createdAt: newUser.createdAt,
       updatedAt: newUser.updatedAt,

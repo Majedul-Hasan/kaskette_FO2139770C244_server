@@ -3,12 +3,12 @@ import ApiError from "../../errors/ApiError";
 import httpStatus from "http-status";
 import { IPaginationOptions } from "../../interface/pagination.type";
 import { paginationHelper } from "../../helpers/paginationHelper";
-import fs from "fs";
-import path from "path";
 import { User, UserRoleEnum, UserStatusEnum } from "@prisma/client";
+import { S3Uploader } from "../../lib/S3Uploader";
 
 const getAllUsersFromDB = async (
-  options: IPaginationOptions & { email?: string }, userId: string
+  options: IPaginationOptions & { email?: string },
+  userId: string
 ) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
 
@@ -32,6 +32,13 @@ const getAllUsersFromDB = async (
         role: {
           not: UserRoleEnum.SUPER_ADMIN,
         },
+        status: {
+          notIn: [UserStatusEnum.blocked, UserStatusEnum.deactivated],
+        },
+        isVerified: {
+          not: false,
+        },
+
         ...emailFilter,
       },
       orderBy: {
@@ -127,60 +134,53 @@ const updateMyProfileIntoDB = async (
   if (!existingUser) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
-
-  // Check if there is an existing image and delete it from the file system
-  if (existingUser.images) {
-    const filenames = existingUser.images.map(
-      (image) => image.split("/uploads/")[1]
+  let images = [...existingUser.images];
+  if (file && file.length > 0) {
+    // Upload multiple files to S3
+    const uploadPromises = file.map((file: any) =>
+      S3Uploader.uploadToS3(file, "user")
     );
-    for (const filename of filenames) {
-      const imagePath = path.join(process.cwd(), "uploads", filename);
-
-      try {
-        // Check if the image exists on the file system
-        if (fs.existsSync(imagePath)) {
-          fs.unlinkSync(imagePath); // Remove the existing image file from the server
-          console.log("Deleted the existing image:", imagePath);
-        } else {
-          console.log("Image not found, skipping deletion.");
-        }
-      } catch (err) {
-        console.error("Error deleting existing image:", err);
-      }
+    const uploadResults = await Promise.all(uploadPromises);
+    payload.images = uploadResults.map((result) => result.Location); // Update the payload with S3 URLs
+    if (file && file.length > 0) {
+      images = [
+        ...existingUser.images,
+        ...uploadResults.map((result) => result.Location),
+      ];
+      payload.images = images; // Update the payload with S3 URLs
     }
-  }
-  // Prepare the updated data object
-  const updatedData = {
-    ...payload,
-    images: file
-      ? file.map((img: any) => `${protocol}://${host}/uploads/${img.filename}`)
-      : existingUser.images, // Update the image if provided
-  };
-  const result = await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: updatedData,
-    select: {
-      id: true,
-      name: true,
-      bio: true,
-      language: true,
-      dob: true,
-      email: true,
-      images: true,
-      profession: true,
-    },
-  });
 
-  return result;
+    // Prepare the updated data object
+    const updatedData = {
+      ...payload,
+      images: images || existingUser.images,
+      updatedAt: new Date(),
+    };
+    const result = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: updatedData,
+      select: {
+        id: true,
+        name: true,
+        bio: true,
+        language: true,
+        dob: true,
+        email: true,
+        images: true,
+        profession: true,
+      },
+    });
+
+    return result;
+  }
 };
 
 const pauseOrActiveAccountIntoDB = async (
   id: string,
   payload: { status: Partial<UserStatusEnum> }
 ) => {
-
   if (payload.status === UserStatusEnum.blocked) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
@@ -212,10 +212,14 @@ const findUniqUserName = async (userName: string) => {
     where: { userName },
   });
   // if (!existingUser?.emailVerified && ) {
-    
+
   // }
   // If the username exists, throw an error
-  if (existingUser && existingUser.emailVerified && existingUser.emailVerified) {
+  if (
+    existingUser &&
+    existingUser.emailVerified &&
+    existingUser.emailVerified
+  ) {
     throw new ApiError(httpStatus.CONFLICT, "Username already exists");
   }
   // If the username is unique, return a success message
@@ -273,6 +277,7 @@ const deleteMyAccount = async (id: string) => {
 
   return result;
 };
+
 export const UserServices = {
   getAllUsersFromDB,
   getMyProfileFromDB,
@@ -283,60 +288,3 @@ export const UserServices = {
   softDelete,
   deleteMyAccount,
 };
-
-const SubscriptionFeatured = [
-  {
-    name: "LOVES",
-    price: 0,
-    duration: 0,
-    features: ["Unlimited messages", "Unlimited likes"],
-  },
-  {
-    name: "Lov_Starter",
-    price: 0,
-    duration: 0,
-    features: ["Unlimited messages", "Unlimited likes"],
-  },
-  {
-    name: "Lov_Start",
-    price: 0,
-    duration: 0,
-    features: ["Unlimited messages", "Unlimited likes"],
-  },
-  {
-    name: "Lov_Explorer",
-    price: 0,
-    duration: 0,
-    features: ["Unlimited messages", "Unlimited likes"],
-  },
-  {
-    name: "Lov_Connect",
-    price: 0,
-    duration: 0,
-    features: ["Unlimited messages", "Unlimited likes"],
-  },
-  {
-    name: "Lov_Elite",
-    price: 0,
-    duration: 0,
-    features: ["Unlimited messages", "Unlimited likes"],
-  },
-  {
-    name: "Reveal_1",
-    price: 0,
-    duration: 0,
-    features: ["Unlimited messages", "Unlimited likes"],
-  },
-  {
-    name: "Reveal_3",
-    price: 0,
-    duration: 0,
-    features: ["Unlimited messages", "Unlimited likes"],
-  },
-  {
-    name: "Reveal_4",
-    price: 0,
-    duration: 0,
-    features: ["Unlimited messages", "Unlimited likes"],
-  },
-];
