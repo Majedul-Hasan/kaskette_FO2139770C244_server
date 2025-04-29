@@ -84,7 +84,31 @@ const getAllUsersFromDB = async (
 const llmUsersDetails = async (
   userId: string
 ) => {
-  const result = await prisma.user.findMany({
+
+  const myData = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+    },
+    select: {
+      id: true,
+      userName: true,
+      name: true,
+      role: true,
+      interestedIn: true,
+      gender: true,
+      dob: true,
+      images: true,
+      latitude: true,
+      longitude: true,
+      radius: true,
+      address: true,
+      bio: true,
+      profession: true,
+      language: true,
+    }
+  });
+  
+  const usersData = await prisma.user.findMany({
     where: {
       id: {
         notIn: [userId], // Corrected: 'notIn' is used for array values
@@ -122,7 +146,7 @@ const llmUsersDetails = async (
     }
   })
 
-  return result
+  return {myData, usersData}
 }
 
 const getMyProfileFromDB = async (id: string) => {
