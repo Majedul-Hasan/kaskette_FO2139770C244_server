@@ -111,6 +111,7 @@ const llmUsersDetails = async (
       interestedIn: true,
       gender: true,
       dob: true,
+      images: true,
       latitude: true,
       longitude: true,
       radius: true,

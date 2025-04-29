@@ -151,6 +151,8 @@ async function main() {
                   params: { userId: receiverId },
                   body: notificationData,
                 });
+                console.log("Notification sent successfully!", notificationData);
+                
               } catch (error: any) {
                 console.error("Failed to send notification:", error.message);
               }
