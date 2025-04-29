@@ -81,6 +81,49 @@ const getAllUsersFromDB = async (
   };
 };
 
+const llmUsersDetails = async (
+  userId: string
+) => {
+  const result = await prisma.user.findMany({
+    where: {
+      id: {
+        notIn: [userId], // Corrected: 'notIn' is used for array values
+      },
+      role: {
+        not: UserRoleEnum.SUPER_ADMIN,
+      },
+      status: {
+        notIn: [UserStatusEnum.blocked, UserStatusEnum.deactivated],
+      },
+      isVerified: {
+        not: false,
+      },
+      
+    },
+    orderBy: {
+      createdAt: "desc"
+    },
+    select: {
+      id: true,
+      userName: true,
+      name: true,
+      role: true,
+      interestedIn: true,
+      gender: true,
+      dob: true,
+      latitude: true,
+      longitude: true,
+      radius: true,
+      address: true,
+      bio: true,
+      profession: true,
+      language: true,
+    }
+  })
+
+  return result
+}
+
 const getMyProfileFromDB = async (id: string) => {
   const Profile = await prisma.user.findUniqueOrThrow({
     where: {
@@ -309,5 +352,6 @@ export const UserServices = {
   pauseOrActiveAccountIntoDB,
   findUniqUserName,
   softDelete,
+  llmUsersDetails,
   deleteMyAccount,
 };
