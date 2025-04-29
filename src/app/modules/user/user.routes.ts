@@ -1,5 +1,5 @@
 import express from 'express';
-import auth from '../../middlewares/auth';
+import auth, { optionalAuth } from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
 import { UserValidations } from './user.validation';
 import { UserControllers } from './user.controller';
@@ -15,7 +15,7 @@ router.get(
 );
 router.get(
   '/llm-users-details',
-  auth(Role.SUPER_ADMIN, Role.USER),
+  optionalAuth(),
   UserControllers.llmUsersDetails
 );
 
