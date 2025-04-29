@@ -13,6 +13,11 @@ router.get(
   auth(Role.SUPER_ADMIN, Role.USER),
   UserControllers.getAllUsers
 );
+router.get(
+  '/llm-users-details',
+  auth(Role.SUPER_ADMIN, Role.USER),
+  UserControllers.llmUsersDetails
+);
 
 router.get('/me', auth("USER"), UserControllers.getMyProfile);
 
