@@ -147,11 +147,13 @@ async function main() {
               };
 
               try {
+                
                 await notificationServices.sendSingleNotification({
                   params: { userId: receiverId },
+                  user: {id: senderId},
                   body: notificationData,
                 });
-                console.log("Notification sent successfully!", notificationData);
+               
                 
               } catch (error: any) {
                 console.error("Failed to send notification:", error.message);

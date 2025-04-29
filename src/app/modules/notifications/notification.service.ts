@@ -12,7 +12,7 @@ const sendSingleNotification = async (req: any) => {
   });
 
   if (!user?.fcmToken) {
-    throw new ApiError(404, "User not found with FCM token");
+    return;
   }
 
   const message = {
