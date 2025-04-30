@@ -1,4 +1,5 @@
-export const emailText = (h1:string,otpCode: any) => `
+ // Ensure the file exists in the specified path
+export const emailText = (h1: string, otpCode: any, description: string, logo?: any ) => `
        <table cellpadding="0" cellspacing="0" align="center" class="es-content" role="none"
             style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%;table-layout:fixed !important">
             <tr>
@@ -18,7 +19,7 @@ export const emailText = (h1:string,otpCode: any) => `
                                                 <tr>
                                                     <td align="center"
                                                         style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px;font-size:0px">
-                                                        <img src="https://everbrighthomecare.co.uk/wp-content/uploads/2023/08/20240426_124633_0000-e1714395307274.png"
+                                                        <img src=${logo ? logo :"https://i.postimg.cc/7YfS0vZH/Vector-2.png"}
                                                             alt="" width="200" 
                                                             style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
                                                     </td>
@@ -36,7 +37,7 @@ export const emailText = (h1:string,otpCode: any) => `
                                                         <p
                                                             style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">
 
-                                                            We received a request to reset your alika Account password
+                                                            ${description}
                                                         </p>
                                                     </td>
                                                 </tr>
@@ -155,11 +156,6 @@ export const emailText = (h1:string,otpCode: any) => `
                                                 </tr>
                                                 <tr>
                                                     <td align="center" style="padding:0;Margin:0;padding-bottom:35px">
-                                                        <p
-                                                            style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;letter-spacing:0;color:#333333;font-size:12px">
-                                                            town'zz &nbsp;© 2024 town'zz, Inc.
-                                                            All
-                                                            Rights Reserved.</p>
                                                         <!-- <p
                                                                                 style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;letter-spacing:0;color:#333333;font-size:12px">
                                                                                 4562 Hazy Panda Limits, Chair Crossing,
@@ -171,26 +167,6 @@ export const emailText = (h1:string,otpCode: any) => `
                                                         <table cellpadding="0" cellspacing="0" width="100%"
                                                             class="es-menu" role="presentation"
                                                             style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                            <tr class="links">
-                                                                <td align="center" valign="top" width="33.33%"
-                                                                    style="Margin:0;border:0;padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px">
-                                                                    <a target="_blank" href=""
-                                                                        style="mso-line-height-rule:exactly;text-decoration:none;font-family:arial, 'helvetica neue', helvetica, sans-serif;display:block;color:#999999;font-size:12px">Visit
-                                                                        Us </a>
-                                                                </td>
-                                                                <td align="center" valign="top" width="33.33%"
-                                                                    style="Margin:0;border:0;padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;border-left:1px solid #cccccc">
-                                                                    <a target="_blank" href=""
-                                                                        style="mso-line-height-rule:exactly;text-decoration:none;font-family:arial, 'helvetica neue', helvetica, sans-serif;display:block;color:#999999;font-size:12px">Privacy
-                                                                        Policy</a>
-                                                                </td>
-                                                                <td align="center" valign="top" width="33.33%"
-                                                                    style="Margin:0;border:0;padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;border-left:1px solid #cccccc">
-                                                                    <a target="_blank" href=""
-                                                                        style="mso-line-height-rule:exactly;text-decoration:none;font-family:arial, 'helvetica neue', helvetica, sans-serif;display:block;color:#999999;font-size:12px">Terms
-                                                                        of Use</a>
-                                                                </td>
-                                                            </tr>
                                                         </table>
                                                     </td>
                                                 </tr>

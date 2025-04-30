@@ -23,6 +23,6 @@ export const sendOTPEmail = async (email: string, otpCode: string) => {
     await sentEmailUtility(
       email,
       "Verify Your Email",
-      emailText("Verify Your Email", otpCode)
+      emailText("Verify Your Email", otpCode, "Thanks for signing up! Please verify your email address by entering the OTP code below.", ),
     );
   };
