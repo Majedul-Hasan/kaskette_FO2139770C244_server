@@ -270,6 +270,7 @@ const getMyProfileFromDB = async (id: string) => {
       images: true,
       bio: true,
       dob: true,
+      address: true,
       latitude: true,
       longitude: true,
       createdAt: true,

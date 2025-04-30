@@ -71,16 +71,3 @@ router.delete(
 
 export const UserRouters = router;
 
-
-// router.put(
-//   "/update-profile",
-//   auth("USER"),
-//   fileUploader.uploadMultiple,
-//   (req: Request, res: Response, next: NextFunction) => {
-//     req.body = UserValidations.updateProfileSchema.parse(
-//       JSON.parse(req.body.data)
-//     );
-//     return UserControllers.updateMyProfile(req, res, next);
-//   },
-//   // UserControllers.updateMyProfile
-// );
