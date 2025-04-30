@@ -81,10 +81,7 @@ const getAllUsersFromDB = async (
   };
 };
 
-const llmUsersDetails = async (
-  userId: string
-) => {
-
+const llmUsersDetails = async (userId: string) => {
   const myData = await prisma.user.findUniqueOrThrow({
     where: {
       id: userId,
@@ -105,9 +102,9 @@ const llmUsersDetails = async (
       bio: true,
       profession: true,
       language: true,
-    }
+    },
   });
-  
+
   const usersData = await prisma.user.findMany({
     where: {
       id: {
@@ -122,10 +119,9 @@ const llmUsersDetails = async (
       isVerified: {
         not: false,
       },
-      
     },
     orderBy: {
-      createdAt: "desc"
+      createdAt: "desc",
     },
     select: {
       id: true,
@@ -143,28 +139,29 @@ const llmUsersDetails = async (
       bio: true,
       profession: true,
       language: true,
-    }
-  })
+    },
+  });
 
-  return {myData, usersData}
-}
-const llmUsersDetailsParams = async (
-  userId: string
-) => {
-
+  return { myData, usersData };
+};
+const llmUsersDetailsParams = async (userId: string) => {
   // if userId is not provided, throw an error
   if (!userId) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User ID is required");
   }
-  
+
   // Check if the user exists
   const existingUser = await prisma.user.findUnique({
     where: { id: userId },
   });
 
-  if (!existingUser || existingUser?.isDelete || existingUser?.status === UserStatusEnum.blocked || existingUser?.status !== UserStatusEnum.in_progress) {
+  if (
+    !existingUser ||
+    existingUser?.isDelete ||
+    existingUser?.status === UserStatusEnum.blocked ||
+    existingUser?.status !== UserStatusEnum.in_progress
+  ) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-    
   }
 
   const myData = await prisma.user.findUniqueOrThrow({
@@ -187,9 +184,9 @@ const llmUsersDetailsParams = async (
       bio: true,
       profession: true,
       language: true,
-    }
+    },
   });
-  
+
   const usersData = await prisma.user.findMany({
     where: {
       id: {
@@ -204,10 +201,9 @@ const llmUsersDetailsParams = async (
       isVerified: {
         not: false,
       },
-      
     },
     orderBy: {
-      createdAt: "desc"
+      createdAt: "desc",
     },
     select: {
       id: true,
@@ -225,11 +221,11 @@ const llmUsersDetailsParams = async (
       bio: true,
       profession: true,
       language: true,
-    }
-  })
+    },
+  });
 
-  return {myData, usersData}
-}
+  return { myData, usersData };
+};
 
 const getMyProfileFromDB = async (id: string) => {
   const Profile = await prisma.user.findUniqueOrThrow({
@@ -277,22 +273,24 @@ const updateMyProfileIntoDB = async (
   host: string,
   userId: string
 ) => {
+  console.log("🎦", payload);
+
   // Check if user exists
   const existingUser = await prisma.user.findUnique({
     where: { id: userId },
   });
-  
+
   if (!existingUser) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
 
   // Check if the file is an array and has at least one file
-  if (!Array.isArray(file) || file.length === 0) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      "Please upload at least 2 images"
-    );
-  }
+  // if (!Array.isArray(file) || file.length === 0) {
+  //   throw new ApiError(
+  //     httpStatus.BAD_REQUEST,
+  //     "Please upload at least 2 images"
+  //   );
+  // }
 
   let images = [...existingUser.images];
 
@@ -316,38 +314,41 @@ const updateMyProfileIntoDB = async (
         httpStatus.BAD_REQUEST,
         "Please upload at least 2 images"
       );
-    } else if (images.length > 8) {
+    } else
+    if (images.length > 8) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,
         "Maximum 8 images are allowed"
       );
     }
-
-    // Prepare the updated data object
-    const updatedData = {
-      ...payload,
-      images: images || existingUser.images,
-      updatedAt: new Date(),
-    };
-    const result = await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: updatedData,
-      select: {
-        id: true,
-        name: true,
-        bio: true,
-        language: true,
-        dob: true,
-        email: true,
-        images: true,
-        profession: true,
-      },
-    });
-
-    return result;
   }
+
+  // Prepare the updated data object
+  const updatedData = {
+    ...payload,
+    images: images || existingUser.images,
+    updatedAt: new Date(),
+  };
+  console.log("😊", { updatedData });
+
+  const result = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: updatedData,
+    select: {
+      id: true,
+      name: true,
+      bio: true,
+      language: true,
+      dob: true,
+      email: true,
+      images: true,
+      profession: true,
+    },
+  });
+
+  return result;
 };
 
 const pauseOrActiveAccountIntoDB = async (
@@ -461,5 +462,5 @@ export const UserServices = {
   softDelete,
   llmUsersDetails,
   deleteMyAccount,
-  llmUsersDetailsParams
+  llmUsersDetailsParams,
 };
