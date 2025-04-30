@@ -144,6 +144,7 @@ const llmUsersDetails = async (userId: string) => {
 
   return { myData, usersData };
 };
+
 const llmUsersDetailsParams = async (userId: string) => {
   // if userId is not provided, throw an error
   if (!userId) {
@@ -227,6 +228,31 @@ const llmUsersDetailsParams = async (userId: string) => {
   return { myData, usersData };
 };
 
+const suggestForMe = async (
+  payload: { keyword: "suggest" | "recommend" },
+  userId: string
+) => {
+  if (!payload.keyword) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Keyword is required");
+  }
+
+  if (payload.keyword === "suggest" || payload.keyword === "recommend") {
+    const response = await fetch(`https://date-match-production.up.railway.app/match/recommendations/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new ApiError(response.status, "Failed to get recommendations");
+    }
+
+    const result = await response.json();
+    return result;
+  }
+};
+
 const getMyProfileFromDB = async (id: string) => {
   const Profile = await prisma.user.findUniqueOrThrow({
     where: {
@@ -273,7 +299,6 @@ const updateMyProfileIntoDB = async (
   host: string,
   userId: string
 ) => {
-  console.log("🎦", payload);
 
   // Check if user exists
   const existingUser = await prisma.user.findUnique({
@@ -463,4 +488,5 @@ export const UserServices = {
   llmUsersDetails,
   deleteMyAccount,
   llmUsersDetailsParams,
+  suggestForMe,
 };

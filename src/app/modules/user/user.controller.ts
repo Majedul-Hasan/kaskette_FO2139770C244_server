@@ -41,6 +41,33 @@ const llmUsersDetailsParams = catchAsync(async (req: Request, res: Response) => 
   });
 });
 
+const suggestForMe = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const body = req.body;
+  const result = await UserServices.suggestForMe(body, userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'suggest for this user successfully',
+    data: result,
+  });
+});
+
+// const AIRecommendation = catchAsync(async (req: Request, res: Response) => {
+//   const userId = req.user.id;
+//   let {id} = req.params;
+//   id = userId
+//   console.log('id😍😍', id);
+  
+//   const result = await UserServices.AIRecommendation(id);
+
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     message: 'suggest for this user successfully',
+//     data: result,
+//   });
+// });
+
 const getMyProfile = catchAsync(async (req: Request, res: Response) => {
   const id = req.user.id;
   const result = await UserServices.getMyProfileFromDB(id);
@@ -137,5 +164,6 @@ export const UserControllers = {
   findUniqUserName,
   softDelete,
   deleteMyAccount,
-  llmUsersDetailsParams
+  llmUsersDetailsParams,
+  suggestForMe,
 };

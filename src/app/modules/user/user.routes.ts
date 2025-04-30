@@ -24,6 +24,12 @@ router.get(
   UserControllers.llmUsersDetailsParams
 );
 
+router.post(
+  '/suggest-for-me',
+  auth(Role.USER),
+  UserControllers.suggestForMe
+);
+
 router.get('/me', auth("USER"), UserControllers.getMyProfile);
 
 router.get('/:id', auth("USER", "SUPER_ADMIN"), UserControllers.getUserDetails);
