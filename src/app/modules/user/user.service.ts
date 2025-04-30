@@ -315,10 +315,10 @@ const updateMyProfileIntoDB = async (
         "Please upload at least 2 images"
       );
     } else
-    if (images.length > 8) {
+    if (images.length > 2000) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,
-        "Maximum 8 images are allowed"
+        "Maximum 2000 images are allowed"
       );
     }
   }
