@@ -5,6 +5,7 @@ import { IPaginationOptions } from "../../interface/pagination.type";
 import { paginationHelper } from "../../helpers/paginationHelper";
 import { User, UserRoleEnum, UserStatusEnum } from "@prisma/client";
 import { S3Uploader } from "../../lib/S3Uploader";
+import { SuggestKeyword, validKeywords } from "./user.constent";
 
 const getAllUsersFromDB = async (
   options: IPaginationOptions & { email?: string },
@@ -229,20 +230,24 @@ const llmUsersDetailsParams = async (userId: string) => {
 };
 
 const suggestForMe = async (
-  payload: { keyword: "suggest" | "recommend" },
+  payload: { keyword: SuggestKeyword },
   userId: string
 ) => {
   if (!payload.keyword) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Keyword is required");
   }
 
-  if (payload.keyword === "suggest" || payload.keyword === "recommend") {
-    const response = await fetch(`https://date-match-production.up.railway.app/match/recommendations/${userId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  const normalizedKeyword = payload.keyword.toLowerCase(); // Normalize the keyword
+  if (validKeywords.includes(normalizedKeyword as SuggestKeyword)) {
+    const response = await fetch(
+      `https://date-match-production.up.railway.app/match/recommendations/${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new ApiError(response.status, "Failed to get recommendations");
@@ -251,6 +256,7 @@ const suggestForMe = async (
     const result = await response.json();
     return result;
   }
+  
 };
 
 const getMyProfileFromDB = async (id: string) => {
@@ -299,7 +305,6 @@ const updateMyProfileIntoDB = async (
   host: string,
   userId: string
 ) => {
-
   // Check if user exists
   const existingUser = await prisma.user.findUnique({
     where: { id: userId },
@@ -339,8 +344,7 @@ const updateMyProfileIntoDB = async (
         httpStatus.BAD_REQUEST,
         "Please upload at least 2 images"
       );
-    } else
-    if (images.length > 2000) {
+    } else if (images.length > 2000) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,
         "Maximum 2000 images are allowed"
