@@ -1,187 +1,212 @@
  // Ensure the file exists in the specified path
-export const emailText = (h1: string, otpCode: any, description: string, logo?: any ) => `
-       <table cellpadding="0" cellspacing="0" align="center" class="es-content" role="none"
-            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%;table-layout:fixed !important">
-            <tr>
-                <td align="center" style="padding:0;Margin:0">
-                    <table bgcolor="#ffffff" align="center" cellpadding="0" cellspacing="0" class="es-content-body"
-                        role="none"
-                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px">
-                        <tr>
-                            <td align="left"
-                                style="Margin:0;padding-right:20px;padding-bottom:10px;padding-left:20px;padding-top:30px">
-                                <table cellpadding="0" cellspacing="0" width="100%" role="none"
-                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                    <tr>
-                                        <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
-                                            <table cellpadding="0" cellspacing="0" width="100%" role="presentation"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                <tr>
-                                                    <td align="center"
-                                                        style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px;font-size:0px">
-                                                        <img src=${logo ? logo :"https://i.postimg.cc/7YfS0vZH/Vector-2.png"}
-                                                            alt="" width="200" 
-                                                            style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td align="center" style="padding:0;Margin:0;padding-bottom:10px">
-                                                        <h3 class="es-m-txt-c"
-                                                            style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:46px;font-style:normal;font-weight:bold;line-height:46px;color:#333333">
-                                                            ${h1}</h3>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td align="center" class="es-m-p0r es-m-p0l"
-                                                        style="Margin:0;padding-top:5px;padding-right:40px;padding-bottom:5px;padding-left:40px">
-                                                        <p
-                                                            style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">
+ export const emailText = (h1:string,otpCode: any) => `
+ <table cellpadding="0" cellspacing="0" align="center" class="es-content" role="none"
+      style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%;table-layout:fixed !important">
+      <tr>
+          <td align="center" style="padding:0;Margin:0">
+              <table bgcolor="#ffffff" align="center" cellpadding="0" cellspacing="0" class="es-content-body"
+                  role="none"
+                  style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#FFFFFF;width:600px">
+                  <tr>
+                      <td align="left"
+                          style="Margin:0;padding-right:20px;padding-bottom:10px;padding-left:20px;padding-top:30px">
+                          <table cellpadding="0" cellspacing="0" width="100%" role="none"
+                              style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                              <tr>
+                                  <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
+                                      <table cellpadding="0" cellspacing="0" width="100%" role="presentation"
+                                          style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                          <tr>
+                                              <td align="center"
+                                                  style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px;font-size:0px">
+                                                  <img src="https://i.postimg.cc/7YfS0vZH/Vector-2.png"
+                                                      alt="" width="200" 
+                                                      style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td align="center" style="padding:0;Margin:0;padding-bottom:10px">
+                                                  <h3 class="es-m-txt-c"
+                                                      style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:46px;font-style:normal;font-weight:bold;line-height:46px;color:#333333">
+                                                      ${h1}</h3>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td align="center" class="es-m-p0r es-m-p0l"
+                                                  style="Margin:0;padding-top:5px;padding-right:40px;padding-bottom:5px;padding-left:40px">
+                                                  <p
+                                                      style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">
 
-                                                            ${description}
-                                                        </p>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="left"
-                                style="Margin:0;padding-top:10px;padding-right:20px;padding-bottom:10px;padding-left:20px">
-                                <table cellpadding="0" cellspacing="0" width="100%" role="none"
-                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                    <tr>
-                                        <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
-                                            <table cellpadding="0" cellspacing="0" width="100%"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:separate;border-spacing:0px;border-radius:5px;border:2px dashed #cccccc"
-                                                role="presentation">
-                                                <tr>
-                                                    <td align="center"
-                                                        style="padding:0;Margin:0;padding-right:20px;padding-left:20px;padding-top:20px">
-                                                        <h3 class="es-m-txt-c"
-                                                            style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:26px;font-style:normal;font-weight:bold;line-height:31.2px;color:#333333">
-                                                            Your verification code is:</h3>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td align="center"
-                                                        style="Margin:0;padding-top:10px;padding-right:20px;padding-left:20px;padding-bottom:20px">
-                                                        <h1 class="es-m-txt-c"
-                                                            style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:46px;font-style:normal;font-weight:bold;line-height:55.2px;color:#5c68e2">
-                                                            <strong>${otpCode}</strong>
-                                                            <!-- TODO  -->
-                                                        </h1>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
+                                                        <span style="font-size: 14px;">We are excited to have you on board. To complete your registration, please verify your email address by entering the code below:</span>
+                                                  </p>
+                                              </td>
+                                          </tr>
+                                      </table>
+                                  </td>
+                              </tr>
+                          </table>
+                      </td>
+                  </tr>
+                  <tr>
+                      <td align="left"
+                          style="Margin:0;padding-top:10px;padding-right:20px;padding-bottom:10px;padding-left:20px">
+                          <table cellpadding="0" cellspacing="0" width="100%" role="none"
+                              style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                              <tr>
+                                  <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
+                                      <table cellpadding="0" cellspacing="0" width="100%"
+                                          style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:separate;border-spacing:0px;border-radius:5px;border:2px dashed #cccccc"
+                                          role="presentation">
+                                          <tr>
+                                              <td align="center"
+                                                  style="padding:0;Margin:0;padding-right:20px;padding-left:20px;padding-top:20px">
+                                                  <h3 class="es-m-txt-c"
+                                                      style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:26px;font-style:normal;font-weight:bold;line-height:31.2px;color:#333333">
+                                                      Your verification code is:</h3>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td align="center"
+                                                  style="Margin:0;padding-top:10px;padding-right:20px;padding-left:20px;padding-bottom:20px">
+                                                  <h1 class="es-m-txt-c"
+                                                      style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:46px;font-style:normal;font-weight:bold;line-height:55.2px;color:#5c68e2">
+                                                      <strong>${otpCode}</strong>
+                                                      <!-- TODO  -->
+                                                  </h1>
+                                              </td>
+                                          </tr>
+                                      </table>
+                                  </td>
+                              </tr>
+                          </table>
+                      </td>
+                  </tr>
 
-                    </table>
-                </td>
-            </tr>
-        </table>
-        <table cellpadding="0" cellspacing="0" align="center" class="es-footer" role="none"
-            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%;table-layout:fixed !important;background-color:transparent;background-repeat:repeat;background-position:center top">
-            <tr>
-                <td align="center" style="padding:0;Margin:0">
-                    <table align="center" cellpadding="0" cellspacing="0" class="es-footer-body"
-                        style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:640px"
-                        role="none">
-                        <tr>
-                            <td align="left"
-                                style="Margin:0;padding-right:20px;padding-left:20px;padding-bottom:20px;padding-top:20px">
-                                <table cellpadding="0" cellspacing="0" width="100%" role="none"
-                                    style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                    <tr>
-                                        <td align="left" style="padding:0;Margin:0;width:600px">
-                                            <table cellpadding="0" cellspacing="0" width="100%" role="presentation"
-                                                style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                <tr>
-                                                    <td align="center"
-                                                        style="padding:0;Margin:0;padding-top:15px;padding-bottom:15px;font-size:0">
-                                                        <table cellpadding="0" cellspacing="0"
-                                                            class="es-table-not-adapt es-social" role="presentation"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                            <tr>
-                                                                <td align="center" valign="top"
-                                                                    style="padding:0;Margin:0;padding-right:40px">
-                                                                    <a href="www.facebook.com/" target="_blank">
-                                                                        <img title="Facebook"
-                                                                            src="https://erowefr.stripocdn.email/content/assets/img/social-icons/logo-black/facebook-logo-black.png"
-                                                                            alt="Fb" width="32"
-                                                                            style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
-                                                                    </a>
-                                                                </td>
-                                                                <td align="center" valign="top"
-                                                                    style="padding:0;Margin:0;padding-right:40px">
-                                                                    <a href="www.x.com/" target="_blank">
-                                                                        <img title="X" src="https://erowefr.stripocdn.email/content/assets/img/social-icons/logo-black/x-logo-black.png"
-                                                                            alt="X" width="32"
-                                                                            style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
-                                                                    </a>
+              </table>
+          </td>
+      </tr>
+  </table>
+  <table cellpadding="0" cellspacing="0" align="center" class="es-footer" role="none"
+      style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%;table-layout:fixed !important;background-color:transparent;background-repeat:repeat;background-position:center top">
+      <tr>
+          <td align="center" style="padding:0;Margin:0">
+              <table align="center" cellpadding="0" cellspacing="0" class="es-footer-body"
+                  style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:transparent;width:640px"
+                  role="none">
+                  <tr>
+                      <td align="left"
+                          style="Margin:0;padding-right:20px;padding-left:20px;padding-bottom:20px;padding-top:20px">
+                          <table cellpadding="0" cellspacing="0" width="100%" role="none"
+                              style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                              <tr>
+                                  <td align="left" style="padding:0;Margin:0;width:600px">
+                                      <table cellpadding="0" cellspacing="0" width="100%" role="presentation"
+                                          style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                          <tr>
+                                              <td align="center"
+                                                  style="padding:0;Margin:0;padding-top:15px;padding-bottom:15px;font-size:0">
+                                                  <table cellpadding="0" cellspacing="0"
+                                                      class="es-table-not-adapt es-social" role="presentation"
+                                                      style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                                      <tr>
+                                                          <td align="center" valign="top"
+                                                              style="padding:0;Margin:0;padding-right:40px">
+                                                              <a href="www.facebook.com/" target="_blank">
+                                                                  <img title="Facebook"
+                                                                      src="https://erowefr.stripocdn.email/content/assets/img/social-icons/logo-black/facebook-logo-black.png"
+                                                                      alt="Fb" width="32"
+                                                                      style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
+                                                              </a>
+                                                          </td>
+                                                          <td align="center" valign="top"
+                                                              style="padding:0;Margin:0;padding-right:40px">
+                                                              <a href="www.x.com/" target="_blank">
+                                                                  <img title="X" src="https://erowefr.stripocdn.email/content/assets/img/social-icons/logo-black/x-logo-black.png"
+                                                                      alt="X" width="32"
+                                                                      style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
+                                                              </a>
 
-                                                                </td>
-                                                                <td align="center" valign="top"
-                                                                    style="padding:0;Margin:0;padding-right:40px">
-                                                                    <a href="www.instagram.com/" target="_blank">
-                                                                        <img title="Instagram"
-                                                                            src="https://erowefr.stripocdn.email/content/assets/img/social-icons/logo-black/instagram-logo-black.png"
-                                                                           
-                                                                            alt="Inst" width="32"
-                                                                            style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
-                                                                    </a>
+                                                          </td>
+                                                          <td align="center" valign="top"
+                                                              style="padding:0;Margin:0;padding-right:40px">
+                                                              <a href="www.instagram.com/" target="_blank">
+                                                                  <img title="Instagram"
+                                                                      src="https://erowefr.stripocdn.email/content/assets/img/social-icons/logo-black/instagram-logo-black.png"
+                                                                     
+                                                                      alt="Inst" width="32"
+                                                                      style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
+                                                              </a>
 
-                                                                </td>
-                                                                <td align="center" valign="top"
-                                                                    style="padding:0;Margin:0">
-                                                                    <a href="www.youtube.com/" target="_blank">
+                                                          </td>
+                                                          <td align="center" valign="top"
+                                                              style="padding:0;Margin:0">
+                                                              <a href="www.youtube.com/" target="_blank">
 
-                                                                        <img title="Youtube"
-                                                                            src="https://erowefr.stripocdn.email/content/assets/img/social-icons/logo-black/youtube-logo-black.png"
-                                                                           
-                                                                            alt="Yt" width="32"
-                                                                            style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
-                                                                    </a>
+                                                                  <img title="Youtube"
+                                                                      src="https://erowefr.stripocdn.email/content/assets/img/social-icons/logo-black/youtube-logo-black.png"
+                                                                     
+                                                                      alt="Yt" width="32"
+                                                                      style="display:block;font-size:14px;border:0;outline:none;text-decoration:none">
+                                                              </a>
 
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td align="center" style="padding:0;Margin:0;padding-bottom:35px">
-                                                        <!-- <p
-                                                                                style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;letter-spacing:0;color:#333333;font-size:12px">
-                                                                                4562 Hazy Panda Limits, Chair Crossing,
-                                                                                Kentucky, US, 607898</p> -->
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="padding:0;Margin:0">
-                                                        <table cellpadding="0" cellspacing="0" width="100%"
-                                                            class="es-menu" role="presentation"
-                                                            style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-      
-      `;
+                                                          </td>
+                                                      </tr>
+                                                  </table>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td align="center" style="padding:0;Margin:0;padding-bottom:35px">
+                                                  <p
+                                                      style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;letter-spacing:0;color:#333333;font-size:12px">
+                                                      town'zz &nbsp;© 2024 town'zz, Inc.
+                                                      All
+                                                      Rights Reserved.</p>
+                                                  <!-- <p
+                                                                          style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:18px;letter-spacing:0;color:#333333;font-size:12px">
+                                                                          4562 Hazy Panda Limits, Chair Crossing,
+                                                                          Kentucky, US, 607898</p> -->
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td style="padding:0;Margin:0">
+                                                  <table cellpadding="0" cellspacing="0" width="100%"
+                                                      class="es-menu" role="presentation"
+                                                      style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                                      <tr class="links">
+                                                          <td align="center" valign="top" width="33.33%"
+                                                              style="Margin:0;border:0;padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px">
+                                                              <a target="_blank" href=""
+                                                                  style="mso-line-height-rule:exactly;text-decoration:none;font-family:arial, 'helvetica neue', helvetica, sans-serif;display:block;color:#999999;font-size:12px">Visit
+                                                                  Us </a>
+                                                          </td>
+                                                          <td align="center" valign="top" width="33.33%"
+                                                              style="Margin:0;border:0;padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;border-left:1px solid #cccccc">
+                                                              <a target="_blank" href=""
+                                                                  style="mso-line-height-rule:exactly;text-decoration:none;font-family:arial, 'helvetica neue', helvetica, sans-serif;display:block;color:#999999;font-size:12px">Privacy
+                                                                  Policy</a>
+                                                          </td>
+                                                          <td align="center" valign="top" width="33.33%"
+                                                              style="Margin:0;border:0;padding-top:5px;padding-bottom:5px;padding-right:5px;padding-left:5px;border-left:1px solid #cccccc">
+                                                              <a target="_blank" href=""
+                                                                  style="mso-line-height-rule:exactly;text-decoration:none;font-family:arial, 'helvetica neue', helvetica, sans-serif;display:block;color:#999999;font-size:12px">Terms
+                                                                  of Use</a>
+                                                          </td>
+                                                      </tr>
+                                                  </table>
+                                              </td>
+                                          </tr>
+                                      </table>
+                                  </td>
+                              </tr>
+                          </table>
+                      </td>
+                  </tr>
+              </table>
+          </td>
+      </tr>
+  </table>
+
+`;
 export const emailText2 = (link: string) => `
       <!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
