@@ -15,8 +15,13 @@ router.get(
 );
 router.get(
   '/llm-users-details',
-  optionalAuth(),
+  auth(Role.USER),
   UserControllers.llmUsersDetails
+);
+
+router.get(
+  '/llm-users-details/:id',
+  UserControllers.llmUsersDetailsParams
 );
 
 router.get('/me', auth("USER"), UserControllers.getMyProfile);

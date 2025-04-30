@@ -30,6 +30,17 @@ const llmUsersDetails = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const llmUsersDetailsParams = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await UserServices.llmUsersDetails(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Users Retrieve successfully',
+    data: result,
+  });
+});
+
 const getMyProfile = catchAsync(async (req: Request, res: Response) => {
   const id = req.user.id;
   const result = await UserServices.getMyProfileFromDB(id);
@@ -125,5 +136,6 @@ export const UserControllers = {
   pauseOrActiveAccount,
   findUniqUserName,
   softDelete,
-  deleteMyAccount
+  deleteMyAccount,
+  llmUsersDetailsParams
 };

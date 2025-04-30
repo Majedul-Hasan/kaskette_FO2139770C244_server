@@ -148,6 +148,88 @@ const llmUsersDetails = async (
 
   return {myData, usersData}
 }
+const llmUsersDetailsParams = async (
+  userId: string
+) => {
+
+  // if userId is not provided, throw an error
+  if (!userId) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User ID is required");
+  }
+  
+  // Check if the user exists
+  const existingUser = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!existingUser || existingUser?.isDelete || existingUser?.status === UserStatusEnum.blocked || existingUser?.status !== UserStatusEnum.in_progress) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+    
+  }
+
+  const myData = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+    },
+    select: {
+      id: true,
+      userName: true,
+      name: true,
+      role: true,
+      interestedIn: true,
+      gender: true,
+      dob: true,
+      images: true,
+      latitude: true,
+      longitude: true,
+      radius: true,
+      address: true,
+      bio: true,
+      profession: true,
+      language: true,
+    }
+  });
+  
+  const usersData = await prisma.user.findMany({
+    where: {
+      id: {
+        notIn: [userId], // Corrected: 'notIn' is used for array values
+      },
+      role: {
+        not: UserRoleEnum.SUPER_ADMIN,
+      },
+      status: {
+        notIn: [UserStatusEnum.blocked, UserStatusEnum.deactivated],
+      },
+      isVerified: {
+        not: false,
+      },
+      
+    },
+    orderBy: {
+      createdAt: "desc"
+    },
+    select: {
+      id: true,
+      userName: true,
+      name: true,
+      role: true,
+      interestedIn: true,
+      gender: true,
+      dob: true,
+      images: true,
+      latitude: true,
+      longitude: true,
+      radius: true,
+      address: true,
+      bio: true,
+      profession: true,
+      language: true,
+    }
+  })
+
+  return {myData, usersData}
+}
 
 const getMyProfileFromDB = async (id: string) => {
   const Profile = await prisma.user.findUniqueOrThrow({
@@ -379,4 +461,5 @@ export const UserServices = {
   softDelete,
   llmUsersDetails,
   deleteMyAccount,
+  llmUsersDetailsParams
 };
