@@ -119,9 +119,12 @@ const getChatUsersForUser = async (userId: string) => {
       user2: true,
       messages: {
         orderBy: { createdAt: "desc" }, // Get the most recent message
-        take: 1, // Only return the latest message
+        take: 1,
       },
     },
+    orderBy: {
+      createdAt: "desc"
+    }
   });
 
   // Extract the unique list of users the user is chatting with and their last message
