@@ -1,8 +1,6 @@
 import crypto from "crypto";
 import { sendOTPEmail } from "../modules/auth/auth.utils";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
-const prisma = new PrismaClient();
 
 export const hashPasswordGenerator = async (password: string): Promise<string> => {
   const saltRounds = 12;
@@ -23,9 +21,10 @@ const saveOrUpdateOTP = async (
   email: string,
   otpCode: string,
   expiry: Date,
-  identifier: string
+  identifier: string,
+  transactionClient: any
 ) => {
-  return await prisma.otp.upsert({
+  return await transactionClient.otp.upsert({
     where: { email },
     update: { otp: otpCode, expiry, hexCode: identifier },
     create: { email, otp: otpCode, expiry, hexCode: identifier },
@@ -34,10 +33,11 @@ const saveOrUpdateOTP = async (
 
 export const OTPGenerationSavingAndSendingEmail = async (
   email: string,
-  minutes?: number
+  transactionClient: any,
+  minutes?: number,
 ): Promise<{ hexCode: string }> => {
   const { otpCode, expiry, hexCode } = generateOTP(minutes || 5); // 5 minutes expiry
-  await saveOrUpdateOTP(email, otpCode, expiry, hexCode);
+  await saveOrUpdateOTP(email, otpCode, expiry, hexCode, transactionClient);
   await sendOTPEmail(email, otpCode);
   return { hexCode };
 };

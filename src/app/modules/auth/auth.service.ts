@@ -53,7 +53,7 @@ const registrationNewUser = async (payload: User, file: any) => {
     let newUser;
     // Create new user if not existing
     if (!existingUser) {
-      newUser = await prisma.user.create({
+      newUser = await transactionClient.user.create({
         data: {
           userName: payload.userName,
           name: payload.name,
@@ -84,7 +84,7 @@ const registrationNewUser = async (payload: User, file: any) => {
         },
       });
     } else {
-      newUser = await prisma.user.update({
+      newUser = await transactionClient.user.update({
         where: { email: payload.email },
         data: {
           userName: payload.userName,
@@ -105,7 +105,7 @@ const registrationNewUser = async (payload: User, file: any) => {
       });
     }
 
-    const otp = await OTPGenerationSavingAndSendingEmail(newUser.email);
+    const otp = await OTPGenerationSavingAndSendingEmail(newUser.email, transactionClient);
 
     return {
       id: newUser.id,
