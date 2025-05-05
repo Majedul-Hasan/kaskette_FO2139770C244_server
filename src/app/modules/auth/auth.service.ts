@@ -29,9 +29,9 @@ const registrationNewUser = async (payload: User, file: any) => {
     payload.images = uploadResults.map((result) => result.Location); // Update the payload with S3 URLs
   }
 
-  return await prisma.$transaction(async (prisma) => {
+  const result = await prisma.$transaction(async (transactionClient) => {
     // Check if email is already registered and Verified
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await transactionClient.user.findUnique({
       where: { email: payload.email },
     });
 
@@ -47,11 +47,7 @@ const registrationNewUser = async (payload: User, file: any) => {
     }else if (payload.images.length > 8) {
       throw new ApiError(httpStatus.BAD_REQUEST, "Maximum 8 images are allowed");
     }
-    // Hash the password
-    // const hashPassword = await bcrypt.hash(
-    //   payload.password!,
-    //   Number(config.bcrypt_salt_rounds)
-    // );
+    
     const hashPassword = await hashPasswordGenerator(payload.password!)
 
     let newUser;
@@ -122,6 +118,7 @@ const registrationNewUser = async (payload: User, file: any) => {
       hexCode: otp.hexCode,
     };
   });
+  return result
 };
 
 const verifyEmail = async (hexCode: string, otpCode: string) => {
