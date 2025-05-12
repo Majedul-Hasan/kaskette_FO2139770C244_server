@@ -9,11 +9,7 @@ const registerUserSchema = z.object({
       .string({
         required_error: "Date of birth is required",
         invalid_type_error: "Date of birth must be a string",
-      })
-      .refine((val) => !isNaN(Date.parse(val)), {
-        message: "Date of birth must be a valid date",
-      })
-      .transform((val) => new Date(val)),
+      }),
     email: z.string().email("Invalid email format"),
     phone: z
       .string({
