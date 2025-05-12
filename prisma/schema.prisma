@@ -14,7 +14,7 @@ model User {
   images        String[]
   gender        UserGenderEnum?
   interestedIn  UserInterestedInEnum?
-  dob           DateTime?
+  dob           String?
   latitude      Float?
   longitude     Float?
   radius        Float?
